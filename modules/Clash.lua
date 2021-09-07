@@ -36,8 +36,6 @@ local function VerifyProcess(Payload, Level)
 			["token"] = Token
 		}))
 
-		p(Res, JSON.decode(Body))
-
 		if Res.code ~= 200 then return SimpleEmbed(Payload.author, "Token verification un-successful!\n \nPlease try again.") end
 
 		Body = JSON.decode(Body)
@@ -155,9 +153,7 @@ Clash:AddSubCommand("stats", function(Args, Payload)
             ["url"] = Info.league.iconUrls.small
         }
     end
-
-    p(Info)
-
+ 
     Payload:reply {
         embed = UserEmbed
     }

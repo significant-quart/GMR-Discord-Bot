@@ -148,8 +148,6 @@ CommandManager.Command("play", function(Args, Payload)
     local SearchFor = false
     local Search
 
-    p(Args[2]:match("https?://(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))"))
-
     if not Args[3] and Args[2]:match("https?://(([%w_.~!*:@&+$/?%%#-]-)(%w[-.%w]*%.)(%w+)(:?)(%d*)(/?)([%w_.~!*:@&+$/?%%#=-]*))") then
         Query = Args[2]
     else

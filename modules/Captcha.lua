@@ -53,7 +53,6 @@ BOT:on("memberJoin", function(Member)
 
         if User then
             if User[3] ~= nil and #User[3] > 0 then
-                print("Deleting OUR message")
                 local OurMessage = VerifyChannel:getMessage(User[3])
                 
                 if OurMessage then
@@ -66,7 +65,6 @@ BOT:on("memberJoin", function(Member)
             Word = GetWord:reset():step()[1]
 
             RemoveWord:reset():bind(Word):step()
-            print("Removed word", Word)
         end
 
         local Arrow = string.rep("=", 23 - math.ceil(#Word/4))
@@ -101,8 +99,6 @@ BOT:on("memberJoin", function(Member)
 
         if Err == nil and Message.id then
             CreateUser:reset():bind(Member.user.id, Word, Message.id):step()
-        else
-            p(Message, Err)
         end
     end)
 end)
