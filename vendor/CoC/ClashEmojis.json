@@ -1,0 +1,133 @@
+{
+    "Trophy": {
+        "EName": "trophies",
+        "EID": "859172289933082666"
+    },
+    "Barbarian King": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171593946923048/BarbarianKing.png",
+        "EName": "barbarianking",
+        "EID": "859173085771726889"
+    },
+    "Archer Queen": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171590179913739/ArcherQueen.png",
+        "EName": "archerqueen",
+        "EID": "859173085433430066"
+    },
+    "Grand Warden": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171611613462618/GrandWarden.png",
+        "EName": "grandwarden",
+        "EID": "859173086368497675"
+    },
+    "Royal Champion": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171614947147776/RoyalChampion.png",
+        "EName": "royalchampion",
+        "EID": "859173087861407745"
+    },
+    "Battle Machine": {
+        "Levels": [
+            {
+                "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171596806651934/BattleMachine1.png",
+                "EName": "battlemachine1",
+                "EID": "859173085768712202"
+            },
+            {
+                "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171599701114910/BattleMachine10.png",
+                "EName": "battlemachine10",
+                "EID": "859173085533569056"
+            },
+            {
+                "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171602871746560/BattleMachine20.png",
+                "EName": "battlemachine20",
+                "EID": "859173086031904788"
+            },
+            {
+                "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171605493317662/BattleMachine26.png",
+                "EName": "battlemachine26",
+                "EID": "859173086104780800"
+            },
+            {
+                "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171608535105556/BattleMachine30.png",
+                "EName": "battlemachine30",
+                "EID": "859173085974102027"
+            }
+        ]
+    },
+    "TH1": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171621482921995/TH1.png"
+    },
+    "TH2": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171802416152626/TH2.png"
+    },
+    "TH3": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171640595709972/TH3.png"
+    },
+    "TH4": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171645532405760/TH4.png"
+    },
+    "TH5": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171649549762620/TH5.png"
+    },
+    "TH6": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171656270217216/TH6.png"
+    },
+    "TH7": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171662485913680/TH7.png"
+    },
+    "TH8": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171666588336158/TH8.png"
+    },
+    "TH9": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171670571614208/TH9.png"
+    },
+    "TH10": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171674494074880/TH10.png"
+    },
+    "TH11": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171678659805184/TH11.png"
+    },
+    "TH121": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171683206299698/TH121.png"
+    },
+    "TH122": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171687319863316/TH122.png"
+    },
+    "TH123": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171691313496074/TH123.png"
+    },
+    "TH124": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171700980711464/TH124.png"
+    },
+    "TH125": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171705422217257/TH125.png"
+    },
+    "TH131": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171710984912914/TH131.png"
+    },
+    "TH132": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171715023765544/TH132.png"
+    },
+    "TH133": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171719351500831/TH133.png"
+    },
+    "TH134": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171723366105168/TH134.png"
+    },
+    "TH135": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171727330639902/TH135.png"
+    },
+    "TH141": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171731989856266/TH141.png"
+    },
+    "TH142": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171739493203989/TH142.png"
+    },
+    "TH143": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171753543860264/TH143.png"
+    },
+    "TH144": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171758787919882/TH144.png"
+    },
+    "TH145": {
+        "URL": "https://cdn.discordapp.com/attachments/859171545418432533/859171765481242654/TH145.png"
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "Categories":{
+    "GMR Commands":{
+      "Roles":{
+        "everyone":true
+      },
+      "Users":[]
+    }
+  },
+  "Commands":{
+  }
+}
