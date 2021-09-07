@@ -16,7 +16,7 @@ function SetReminder(Data, Insert)
 
         if Channel and not Err then
             Channel:send {
-                embed = SimpleEmbed(nil, F("<@%s> your reminder from ``%s``\n \n%s", Data.Owner, os.date("%d/%m/%y @ %X", tonumber(Data.Start)), Data.Message))
+                embed = SimpleEmbed(nil, F("<@%s> your reminder from <t:%d:F>\n \n%s", Data.Owner, Data.Start, Data.Message))
             }
         end
 
@@ -95,5 +95,5 @@ CommandManager.Command("remind", function(Args, Payload)
         ["Message"] = ReminderText
     }, true)
 
-    SimpleEmbed(Payload, F("Your reminder has been successfully set for ``%s``", os.date("%d/%m/%y @ %X", RemindTime)))
+    SimpleEmbed(Payload, F("Your reminder has been successfully set for <t:%d:F>", RemindTime))
 end):SetCategory("Misc Commands"):SetDescription("Set a reminder for later.")

@@ -6,8 +6,8 @@ local Queue = {}
 --[[ Functions ]]
 local function YTJSON(URL, SearchFor, Payload)
     local TempArgs = (SearchFor ~= nil and SearchFor == true and 
-        { "--default-search", "ytsearch", "--cookies", "cookies.txt", "--dump-json", URL, "--external-downloader", "aria2c", "--external-downloader-args", '"-x -s 8 -k 1M"' } or 
-        {                                 "--cookies", "cookies.txt", "--dump-json", URL, "--external-downloader", "aria2c", "--external-downloader-args", '"-x -s 8 -k 1M"' })
+        { "--default-search", "ytsearch", "--cookies", "cookies.txt", "--dump-json", URL} or 
+        {                                 "--cookies", "cookies.txt", "--dump-json", URL})
 
     local YoutubeDL = Spawn("youtube-dl", {
         args = TempArgs,
@@ -102,6 +102,10 @@ end
 
 local function CalculateTimeElapsed(AudioData)
     local TimeElapsed 
+
+    if AudioData.StartTime == nil then
+        return 0
+    end
 
     if AudioData.Seeks > 0 and AudioData.SeekStart ~= nil and AudioData.SeekTime ~= nil then
         TimeElapsed = AudioData.SeekTime + (os.time() - AudioData.SeekStart)

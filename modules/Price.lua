@@ -1,5 +1,5 @@
 --[[ Variables ]]
-local UpdateInterval = 5 -- 30 Seconds
+local UpdateInterval = 30
 local GMRPriceEmbed
 
 --[[ Functions ]]

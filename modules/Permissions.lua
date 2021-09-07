@@ -118,7 +118,7 @@ PermissionsCommand:AddSubCommand("addc", function(Args, Payload)
     end
 
     assert(Exists == true, "that command category doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..Args[3].."`` command category permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..CommandCategory.."`` command category permissions.")
 
     AuditPermission(CommandCategory, "Categories", true, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 
@@ -147,7 +147,7 @@ PermissionsCommand:AddSubCommand("removec", function(Args, Payload)
     end
 
     assert(Exists == true, "that command category doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..Args[3].."`` command category permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..CommandCategory.."`` command category permissions.")
 
     AuditPermission(CommandCategory, "Categories", false, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 

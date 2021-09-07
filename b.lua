@@ -62,10 +62,8 @@ local function ReturnRestOfCommand(AllArgs, StartIndex, Seperator, EndIndex)
     return table.concat(AllArgs, (Seperator ~= nil and type(Seperator) == "string" and Seperator or " "), StartIndex, EndIndex)
 end
 
-local function Interval(Ms, Func, OnReady)
+local function Interval(Ms, Func)
 	return Routine.setInterval(Ms, function()
-		if OnReady == true and Ready == false then return end
-
 		coroutine.wrap(function()
 			local Suc, Err = pcall(Func)
 

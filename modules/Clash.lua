@@ -157,7 +157,7 @@ Clash:AddSubCommand("stats", function(Args, Payload)
     Payload:reply {
         embed = UserEmbed
     }
-end):SetDescription("Information about your Clash of Clans account. Ensure your account is linked!")
+end):SetDescription("Show your Clash of Clans stats. Make sure to link your CoC account!")
 
 --[[ Events ]]
 BOT:on("messageCreate", function(Payload)
@@ -173,12 +173,8 @@ BOT:on("messageCreate", function(Payload)
 end)
 
 --[[ Interval ]]
-coroutine.wrap(function()
-	Routine.setInterval(1000, function()
-		local Suc, Encoded = pcall(JSON.encode, ClashCache)
+Interval(Config.DefaultInterval * 1000, function()
+    local EncodedCache = assert(JSON.encode(ClashCache), "Failed to encode CoC cache!")
 
-		if not Suc then return end
-
-		FileReader.writeFileSync(F("%s/ClashPlayers.json", Config.ModuleDir), Encoded)
-	end)
-end)()
+    FileReader.writeFileSync(F("%s/ClashPlayers.json", Config.ModuleDir), EncodedCache)
+end)

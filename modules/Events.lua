@@ -38,10 +38,10 @@ BOT:on("messageCreate", function(Payload)
 				end)
 
 				if not CommandSuc and Err ~= nil then
-					local Line, Err2 = Err:match(":(%d+):(.+)")
+					local _, Err2 = Err:match(":(%d+):(.+)")
 					
 					if Err2 ~= nil and #Err2 > 1 then
-						Log(1, Err)
+						Log(2, Err)
 						SimpleEmbed(Payload, Payload.author.mentionString.." "..Err2)
 					end
 				end
@@ -52,7 +52,7 @@ end)
 
 BOT:on("ready", function()
 	BOT:setGame({
-		["name"] = Prefix.."help | DM to contact staff",
+		["name"] = Prefix.."help | DM to Give Feedback!",
 		["type"] = 3
 	})
 end)
