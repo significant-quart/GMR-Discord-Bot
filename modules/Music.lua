@@ -3,6 +3,12 @@ local Connections = {}
 local CurrentlyPlaying = {}
 local Queue = {}
 
+local Errors = { -- Used for common errors atm.
+    ["NotConnected"] = "I'm not connected to any channel.",
+    ["NotPlaying"] = "nothing is playing at the moment.",
+    ["ChannelMismatch"] = "you need to be in the same channel as me."
+}
+
 --[[ Functions ]]
 local function YTJSON(URL, SearchFor, Payload)
     local TempArgs = (SearchFor ~= nil and SearchFor == true and 
@@ -21,24 +27,38 @@ local function YTJSON(URL, SearchFor, Payload)
         YoutubeDLData = YoutubeDLData..Res
 	end
 
-    local YoutubeDLData = assert(#YoutubeDLData > 0 and JSON.decode(YoutubeDLData), "there was a problem issue on our end, please try again.")
+    local YoutubeDLData = assert(#YoutubeDLData > 0 and JSON.decode(YoutubeDLData), "there was a problem issue on our end.")
 
     if not YoutubeDLData.formats then
-        return false, "there was no available content for your request."
+        return false, "I couldn't find what you were looking for."
     end
 
     local VideoData = {}
 
-    for _, Format in pairs(YoutubeDLData.requested_formats) do
-        if Format.url:find("mime=audio") then
-            VideoData.FFmpegURL = Format.url
+    if YoutubeDLData.requested_formats then
+        for _, Format in pairs(YoutubeDLData.requested_formats) do
+            if Format.url:find("mime=audio") then
+                VideoData.FFmpegURL = Format.url
 
-            break
+                break
+            end
         end
+    elseif YoutubeDLData.url then
+        VideoData.FFmpegURL = YoutubeDLData.url
     end
 
-    if not VideoData.FFmpegURL or not YoutubeDLData.duration then 
-        return false, "there was no available content for your request."
+    if not VideoData.FFmpegURL then 
+        return false, "there was a problem on our end finding a raw audio link."
+    end
+
+    if not YoutubeDLData.duration then
+        YoutubeDLData.duration = 0.0
+    end
+
+    if YoutubeDLData.duration == 0.0 then
+        VideoData.IsStream = true
+    else
+        VideoData.IsStream = false
     end
 
     VideoData.Title = (YoutubeDLData.title or "Unknown Title")
@@ -54,7 +74,11 @@ local function YTJSON(URL, SearchFor, Payload)
     return true, VideoData
 end
 
-local function SecondsToClock(Seconds)
+local function SecondsToClock(Seconds, IsStream)
+    if IsStream then
+        return "LIVE"
+    end
+
 	local Seconds = tonumber(Seconds)
 
     if Seconds > 0 then
@@ -130,8 +154,8 @@ CommandManager.Command("summon", function(Args, Payload)
 end):SetCategory("Music Commands")
 
 CommandManager.Command("dc", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel and Connections[Payload.guild.id].channel and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel and Connections[Payload.guild.id].channel and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
 
     Connections[Payload.guild.id]:close()
 end):SetCategory("Music Commands")
@@ -210,9 +234,9 @@ CommandManager.Command("play", function(Args, Payload)
 end):SetCategory("Music Commands"):AddAlias("p")
 
 CommandManager.Command("skip", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, Errors["NotPlaying"])
 
     local GID = Payload.guild.id
     local BOTConnection = Connections[GID]
@@ -252,9 +276,9 @@ CommandManager.Command("skip", function(Args, Payload)
 end):SetCategory("Music Commands"):AddAlias("s")
 
 CommandManager.Command("pause", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, Errors["NotPlaying"])
     assert(CurrentlyPlaying[Payload.guild.id].Paused == false, "")
 
     Connections[Payload.guild.id]:pauseStream()
@@ -263,9 +287,9 @@ CommandManager.Command("pause", function(Args, Payload)
 end):SetCategory("Music Commands")
 
 CommandManager.Command("resume", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, Errors["NotPlaying"])
     assert(CurrentlyPlaying[Payload.guild.id].Paused == true, "")
 
     local AudioData = CurrentlyPlaying[Payload.guild.id]
@@ -276,10 +300,12 @@ CommandManager.Command("resume", function(Args, Payload)
 end):SetCategory("Music Commands")
 
 CommandManager.Command("seek", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, Errors["NotPlaying"])
     
+    assert(CurrentlyPlaying[Payload.guild.id].IsStream == false, "this command is not available for live streams.")
+
     assert(Args[2], F("%s no seek arguments provided.\nI.e. ``%sseek 00:01:30`` or ``%sseek 01:30`` (``HH:MM:SS`` or ``MM:SS``)", Payload.author.mentionString, Prefix, Prefix))
 
     local SeekFormat, SeekTime = CheckSeekFormat(Args[2])
@@ -296,9 +322,11 @@ CommandManager.Command("seek", function(Args, Payload)
 end):SetCategory("Music Commands")
 
 CommandManager.Command("time", function(Args, Payload)
-    assert(Connections[Payload.guild.id] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[Payload.guild.id] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[Payload.guild.id].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[Payload.guild.id] ~= nil, Errors["NotPlaying"])
+
+    assert(CurrentlyPlaying[Payload.guild.id].IsStream == false, "this command is not available for live streams.")
 
     local AudioData = CurrentlyPlaying[Payload.guild.id]
     local TimeElapsed = CalculateTimeElapsed(AudioData)
@@ -324,9 +352,9 @@ end):SetCategory("Music Commands")
 CommandManager.Command("queue", function(Args, Payload) 
     local GID = Payload.guild.id
 
-    assert(Connections[GID] ~= nil, "I'm not connected to any channel.")
-    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[GID].channel, "you need to be in the same channel as me.")
-    assert(CurrentlyPlaying[GID] ~= nil, "nothing is playing at the moment.")
+    assert(Connections[GID] ~= nil, Errors["NotConnected"])
+    assert(Payload.member.voiceChannel ~= nil and Payload.member.voiceChannel == Connections[GID].channel, Errors["ChannelMismatch"])
+    assert(CurrentlyPlaying[GID] ~= nil, Errors["NotPlaying"])
 
     local AudioData = CurrentlyPlaying[GID]
     local QueueString = F("  Title%s| Duration\n", (" "):rep(35))
@@ -335,15 +363,10 @@ CommandManager.Command("queue", function(Args, Payload)
             local QueueItem = (i == 0 and AudioData or Queue[GID][i])
             local QueueTitle = (#QueueItem.Title > 39 and QueueItem.Title:sub(1, 38).."…" or QueueItem.Title)
 
-            QueueString = 
-                QueueString..
-                (i == 0 and AudioData.Paused == true and "∥" or i == 0 and AudioData.Paused == false and "→" or "↳")..
-                " "..
-                QueueTitle..
-                string.rep(" ", (39-#QueueTitle))..
-                " | "..
-                SecondsToClock(QueueItem.Duration)..
-                "\n"
+            QueueString = QueueString..F("%s %s%s | %s\n", 
+            (i == 0 and AudioData.Paused == true and "∥" or i == 0 and AudioData.Paused == false and "→" or "↳"), 
+            QueueTitle, (" "):rep(39 - #QueueTitle), 
+            SecondsToClock(QueueItem.Duration, QueueItem.IsStream))
         end
     end
 
@@ -394,7 +417,7 @@ Interval(1000, function()
             local AudioData = CurrentlyPlaying[GID]
 
             if AudioData and AudioData.StartTime then
-                if CalculateTimeElapsed(AudioData) >= AudioData.Duration then
+                if CalculateTimeElapsed(AudioData) >= AudioData.Duration and AudioData.IsStream == false then
                     if AudioData.Message then
                         AudioData.Message:delete()
                     end

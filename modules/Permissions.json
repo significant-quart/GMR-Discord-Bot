@@ -1,10 +1,28 @@
 {
   "Categories":{
     "GMR Commands":{
+      "Users":[],
       "Roles":{
-        "everyone":true
-      },
-      "Users":[]
+        "836909882732445714":true
+      }
+    },
+    "Fun Commands":{
+      "Users":[],
+      "Roles":{
+        "836909882732445714":true
+      }
+    },
+    "Music Commands":{
+      "Users":[],
+      "Roles":{
+        "836909882732445714":true
+      }
+    },
+    "Misc Commands":{
+      "Users":[],
+      "Roles":{
+        "836909882732445714":true
+      }
     }
   },
   "Commands":{

@@ -16,7 +16,7 @@ end
 --[[ External Function ]]
 _G.HasPermission = function(Member, Command, Category, Payload)
     if Member == nil then return false end
-    if Payload.guild.owner and Member.id == Payload.guild.owner.id then return true end
+    if Payload.member:hasPermission(nil, 0x00000008) then return true end
     if Permissions["Commands"][Command] == nil and Permissions["Categories"][Command] == nil then return false end
     
     if Category and Permissions["Categories"][Category] then
