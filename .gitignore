@@ -18,8 +18,6 @@ deps/discordia/libs/voice/streams/*.lua
 
 modules/*.db
 
-!modules/Captcha.db
-
 modules/Captcha.json
 modules/ClashPlayers.json
 modules/Permissions.json
