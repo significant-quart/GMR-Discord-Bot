@@ -5,16 +5,8 @@ Base.json
 discordia*.log
 gateway*.json
 
-deps/*
+deps/
 !deps/CM.lua
-!deps/discordia
-deps/discordia/*.lua
-deps/discordia/libs/*
-!deps/discordia/libs/voice
-deps/discordia/libs/voice/*.lua
-!deps/discordia/libs/voice/VoiceConnection.lua
-deps/discordia/libs/voice/streams/*.lua
-!deps/discordia/libs/voice/streams/FFmpegProcess.lua
 
 modules/*.db
 
