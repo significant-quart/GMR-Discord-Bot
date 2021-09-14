@@ -60,6 +60,20 @@ local function SimpleEmbed(Channel, Description)
 	return Embed
 end
 
+local function TableIndexExist(t, Indexes)
+	local CurrentPoint = t
+
+	for _, Index in ipairs(Indexes) do
+		if CurrentPoint[Index] then
+			CurrentPoint = CurrentPoint[Index]
+		else
+			return false
+		end
+	end
+
+	return true
+end
+
 local function ReturnRestOfCommand(AllArgs, StartIndex, Seperator, EndIndex)
     return table.concat(AllArgs, (Seperator ~= nil and type(Seperator) == "string" and Seperator or " "), StartIndex, EndIndex)
 end
@@ -120,6 +134,7 @@ local function LoadModule(Module)
 		ReturnRestOfCommand = ReturnRestOfCommand,
 		Interval = Interval,
 		CommaNumber = CommaNumber,
+		TableIndexExist = TableIndexExist,
 
 		ModuleDir = Config.ModuleDir,
 		Prefix = Config.Prefix,

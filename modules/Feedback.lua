@@ -2,8 +2,11 @@
 local Ready = false
 local WaitTime = 30 -- 30 Seconds
 
+local FeedBackOpen = true
+
 local FeedbackC
 
+local SentResponses = {}
 local AwaitingResponse = {}
 
 --[[ Events ]]
@@ -18,8 +21,16 @@ end)
 BOT:on("messageCreate", function(Payload)
     if Payload.author.bot or Payload.guild ~= nil or AwaitingResponse[Payload.author.id] then return end
 
-    if FeedbackC == nil then 
-        return SimpleEmbed(Payload, "Sorry however sending feedback is not available at the moment.")
+    if SentResponses[Payload.author.id] then
+        if (os.time() - SentResponses[Payload.author.id]) >= 10 then
+            SentResponses[Payload.author.id] = nil
+        else
+            return SimpleEmbed(Payload, "Sorry however you may only submit feedback once per 24 hours.")
+        end
+    end
+
+    if FeedbackC == nil or FeedBackOpen == false then 
+        return SimpleEmbed(Payload, "Sorry however the GMR.finance Discord is not receiving any feedback at the moment.")
     end
 
     AwaitingResponse[Payload.author.id] = true
@@ -42,6 +53,8 @@ BOT:on("messageCreate", function(Payload)
 
     if Success then
         if FeedbackPayload.content:lower() == "yes" then
+            SentResponses[Payload.author.id] = os.time()
+
             local Embed = {
                 ["title"] = "Feedback from "..Payload.author.tag,
                 ["color"] = Config["EmbedColour"],
@@ -60,11 +73,35 @@ BOT:on("messageCreate", function(Payload)
                 embed = Embed
             }
 
-            if Success then
+            if Success and not Err then
                 return SimpleEmbed(Payload, "Feedback sent!\n\nThanks for making the GMR.finance project better!")
             end
 
             SimpleEmbed(Payload, "there was a problem sending the feedback, please try again.")
         end
     end
+end)
+
+--[[ Commands ]]
+local FeedbackCommand = CommandManager.Command("feedback", function(Args, Payload)
+end)
+
+FeedbackCommand:AddSubCommand("open", function(Args, Payload)
+    assert(FeedBackOpen == false, "Feedback is already open.")
+
+    FeedBackOpen = true
+
+    return SimpleEmbed(Payload, "Feedback is now open.")
+end)
+
+FeedbackCommand:AddSubCommand("close", function(Args, Payload)
+    assert(FeedBackOpen == true, "Feedback is already closed.")
+
+    FeedBackOpen = false
+
+    return SimpleEmbed(Payload, "Feedback is now closed.")
+end)
+
+FeedbackCommand:AddSubCommand("status", function(Args, Payload)
+    return SimpleEmbed(Payload, F("Feedback is currently %s.", FeedBackOpen == true and "open" or "closed"))
 end)

@@ -63,12 +63,12 @@ local function GetPancakeSwapPrice(Price)
     local ZeroOffset = #Price:match("%.0+") + 2
     local RoundedNum = Price:sub(ZeroOffset, (#Price - ZeroOffset > 2 and ZeroOffset + 2 or #Price))
 
-    return "0."..("0"):rep(ZeroOffset - 3)..RoundedNum
+    return "$0."..("0"):rep(ZeroOffset - 3)..RoundedNum
 end
 
 --[[ Commands ]]
 CommandManager.Command("price", function(Args, Payload)
-    assert(GMRPriceEmbed ~= nil, F("sorry but there is no price information available at the moment, please allow up to %d seconds.", UpdateInterval))
+    assert(GMRPriceEmbed ~= nil, F("sorry however there is no price information available at the moment, please allow up to %d seconds.", UpdateInterval))
 
     Payload:reply {
         embed = GMRPriceEmbed
@@ -77,43 +77,39 @@ end):SetCategory("GMR Commands"):SetDescription("Current price, 24h change and m
 
 --[[ Price Updates ]]
 Interval(UpdateInterval * 1000, function()
-    local GMRData = {
-        ["Symbol"] = "GMR"
-    }
+    local GMRData = {}
 
-    GMRPriceEmbed = {
+    local ThisGMRPriceEmbed = {
         ["title"] = "GMR Coin Price Data",
         ["url"] = "https://gmr.finance/",
         ["description"] = [[
-            Buy/Sell GMR: [Coinsbit](https://coinsbit.io/trade_classic/GMR_mUSDT) | [Biki](https://www.biki.com/en_US/trade/GMR_USDT) 
 
-            Charts: [Bogged Finance](https://charts.bogged.finance/?token=0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7) | [poocoin](https://poocoin.app/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+            [Buy/Sell <:gmr:887332510269313084>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+
+            Charts: [DEXTools](https://www.dextools.io/app/bsc/pair-explorer/0x007ace5397b56e19a9436fba289d7fed71c49328) | [poocoin](https://poocoin.app/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
         ]],
         ["color"] = Config.EmbedColour,
         ["thumbnail"] = {
-            ["url"] = "https://cdn.discordapp.com/attachments/843952944922492999/843982060795854888/GMR.png"
+            ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"
         },
-        ["fields"] = {},
-        ["footer"] = {
-            ["text"] = "Token Address: 0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7"
-        }
+        ["fields"] = {}
     }
 
     local SucCG, CoinGecko = pcall(APIGet, "https://api.coingecko.com/api/v3/simple/price?ids=gmr-finance&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true&include_last_updated_at=true")
 
-    if SucCG == true and CoinGecko["gmr-finance"] then
-        local CoinGecko = CoinGecko["gmr-finance"]
+    if SucCG == true and TableIndexExist(CoinGecko, { "gmr-finance" })  then
+        local CoinGeckoData = CoinGecko["gmr-finance"]
 
         GMRData["CoinGecko"] = {
-            ["Price"] = GetCoinGeckoPrice(tostring(CoinGecko["usd"])),
-            ["24hVol"] = math.round(CoinGecko["usd_24h_vol"], 2),
-            ["24hChange"] = math.round(CoinGecko["usd_24h_change"], 2)
+            ["Price"] = GetCoinGeckoPrice(tostring(CoinGeckoData["usd"])),
+            ["24hVol"] = math.round(CoinGeckoData["usd_24h_vol"], 2),
+            ["24hChange"] = math.round(CoinGeckoData["usd_24h_change"], 2)
         }
     end
 
     local SucPS, PancakeSwap = pcall(APIGet, "https://api.pancakeswap.info/api/v2/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7")
     
-    if SucPS == true then
+    if SucPS == true and TableIndexExist(PancakeSwap, { "data", "price" }) then
         GMRData["PancakeSwap"] = {
             ["Price"] = GetPancakeSwapPrice(PancakeSwap["data"]["price"]),
         }
@@ -125,46 +121,53 @@ Interval(UpdateInterval * 1000, function()
         { "X-API-KEY", "BQY5WwW4iwp2fUEL8DVFrgXt3NEzWqZz" }
     }, [[{"query":"{\n  ethereum(network: bsc) {\n    dexTrades(\n      baseCurrency: {is: \"0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7\"}\n      quoteCurrency: {is: \"0x55d398326f99059ff775485246999027b3197955\"}\n      options: {desc: [\"block.height\", \"transaction.index\"], limit: 1}\n    ) {\n      block {\n        height\n        timestamp {\n          time(format: \"%Y-%m-%d %H:%M:%S\")\n        }\n      }\n      transaction {\n        index\n      }\n      baseCurrency {\n        symbol\n      }\n      quoteCurrency {\n        symbol\n      }\n      quotePrice\n    }\n  }\n}","variables":"{}"}]])
 
-    if SucBQ == true then
+    if SucBQ == true and TableIndexExist(BitQuery, {
+        "data",
+        "ethereum",
+        "dexTrades",
+        1,
+        "quotePrice"
+    }) then
         GMRData["BitQuery"] = {
             ["Price"] = GetCoinGeckoPrice(tostring(BitQuery["data"]["ethereum"]["dexTrades"][1]["quotePrice"]))
         }
     end
 
     if not GMRData["CoinGecko"] and not GMRData["PancakeSwap"] and not GMRData["BitQuery"] then
-        p(#GMRData)
-        GMRPriceEmbed = nil
+        ThisGMRPriceEmbed = nil
 
         return
     end
 
-    table.insert(GMRPriceEmbed["fields"], {
-        ["name"] = "Price ($) <:coingecko:843985310379016223>",
+    table.insert(ThisGMRPriceEmbed["fields"], {
+        ["name"] = "Price <:coingecko:843985310379016223>",
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
-    table.insert(GMRPriceEmbed["fields"], {
-        ["name"] = "Price ($) <:pancakeswap:843985675816665099>",
+    table.insert(ThisGMRPriceEmbed["fields"], {
+        ["name"] = "Price <:pancakeswap:843985675816665099>",
         ["value"] = (GMRData["PancakeSwap"] ~= nil and GMRData["PancakeSwap"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
-    table.insert(GMRPriceEmbed["fields"], {
-        ["name"] = "Price ($) <:bitquery:858844249419022336>",
+    table.insert(ThisGMRPriceEmbed["fields"], {
+        ["name"] = "Price <:bitquery:858844249419022336>",
         ["value"] = (GMRData["BitQuery"] ~= nil and GMRData["BitQuery"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
-    table.insert(GMRPriceEmbed["fields"], {
-        ["name"] = "24h Change ($) <:coingecko:843985310379016223>",
+    table.insert(ThisGMRPriceEmbed["fields"], {
+        ["name"] = "24h Change <:coingecko:843985310379016223>",
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["24hChange"] and F("%s%% %s", GMRData["CoinGecko"]["24hChange"], (GMRData["CoinGecko"]["24hChange"] > 0 and ":chart_with_upwards_trend:" or ":chart_with_downwards_trend:")) or "N/A"),
         ["inline"] = false
     })
 
-    table.insert(GMRPriceEmbed["fields"], {
-        ["name"] = "24h Volume ($) <:coingecko:843985310379016223>",
+    table.insert(ThisGMRPriceEmbed["fields"], {
+        ["name"] = "24h Volume <:coingecko:843985310379016223>",
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["24hVol"] and F("$%s", CommaNumber(GMRData["CoinGecko"]["24hVol"])) or "N/A"),
         ["inline"] = false
     })
+
+    GMRPriceEmbed = ThisGMRPriceEmbed
 end, true)

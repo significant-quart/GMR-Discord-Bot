@@ -223,11 +223,7 @@ CommandManager.Command("play", function(Args, Payload)
                 ["thumbnail"] = {
                     ["url"] = AudioData.Thumbnail
                 },
-                ["color"] = Config.EmbedColour,
-                ["footer"] = {
-                    ["icon_url"] = Payload.guild.iconURL,
-                    ["text"] = F("Pos %s | %s", #Queue[GID] == 1 and "next" or tostring(#Queue[GID]), BOT.user.name)
-                }
+                ["color"] = Config.EmbedColour
             }
         }
     end
@@ -384,7 +380,6 @@ end):SetCategory("Music Commands")
 BOT:on("voiceDisconnect", function(Member)
 	coroutine.wrap(function()
 		if Member.user and Member.user == BOT.user then
-
             if Connections[Member.guild.id] then
 			    Connections[Member.guild.id] = nil
             end

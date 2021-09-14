@@ -1,6 +1,15 @@
 --[[ Variables ]]
-local ClashCache = assert(JSON.decode(FileReader.readFileSync(F("%s/ClashPlayers.json", Config.ModuleDir))), "failed to load Clash of Clans player cache.")
-local ClashEmoji = assert(JSON.decode(FileReader.readFileSync("./vendor/CoC/ClashEmojis.json")), "failed to load Clash of Clans emojis.")
+local ClashCache = FileReader.readFileSync(ModuleDir.."/ClashPlayers.json")
+if not ClashCache then 
+    Log(2, "Couldn't find ClashPlayers.json, creating a new one...") 
+
+    ClashCache = {}
+else
+    ClashCache = assert(JSON.decode(ClashCache), "fatal: Failed to parse ClashCache.json.")
+end
+
+local ClashEmoji = assert(JSON.decode(FileReader.readFileSync("./vendor/CoC/ClashEmojis.json")), "fatal: Failed to read or parse Clash of Clans emojis.")
+
 local Headers = { 
 	{ "Accept", "application/json" }, 
 	{ "authorization", F("Bearer %s", Config["CoCAPIKey"]) } 

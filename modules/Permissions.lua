@@ -2,15 +2,13 @@
 local Permissions = FileReader.readFileSync(ModuleDir.."/Permissions.json")
 if not Permissions then 
     Log(2, "Couldn't find Permissions.json, creating a new one... (Remember to add permissions to commands)") 
-    
-    FileReader.writeFileSync(ModuleDir.."/Permissions.json", "[]") 
 
     Permissions = {
         ["Commands"] = {},
         ["Categories"] = {}
     }
 else
-    Permissions = assert(JSON.decode(Permissions), "fatal: failed to parse Permissions.json.")
+    Permissions = assert(JSON.decode(Permissions), "fatal: Failed to parse Permissions.json.")
 end
 
 --[[ External Function ]]

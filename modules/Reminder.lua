@@ -11,6 +11,8 @@ local MaxReminderLength = 500
 
 --[[ Functions ]]
 function SetReminder(Data, Insert)
+    Data.Start = tonumber(Data.Start)
+
     Routine.setTimeout((Data.Duration - os.time()) * 1000, coroutine.wrap(function()
         local Channel, Err = BOT:getChannel(Data.CID)
 
@@ -56,7 +58,7 @@ end
 CommandManager.Command("remind", function(Args, Payload)
     assert(Args[2] ~= nil, "")
 
-    local CommandS = ReturnRestOfCommand(Args, 2, " ", 4).." "
+    local CommandS = ReturnRestOfCommand(Args, 2, " ", #Args).." "
     local Days = CommandS:match("(%d+)d ")
     local Hours = CommandS:match("(%d+)h ")
     local Minutes = CommandS:match("(%d+)m ")
@@ -83,7 +85,9 @@ CommandManager.Command("remind", function(Args, Payload)
     assert(ArgIgnore ~= 0, "please provide a valid time for your reminder.")
 
     local ReminderText = ReturnRestOfCommand(Args, 2 + ArgIgnore)
-    assert(ReminderText and (#ReminderText > 0) and (#ReminderText <= MaxReminderLength), "your reminder is either too short or too long (> 500 characters).")
+
+    assert(#ReminderText > 0, "you haven't included a reminder.")
+    assert(#ReminderText <= MaxReminderLength, "your reminder is too long, musn't be greater than %d characters.", MaxReminderLength)
 
     local RemindTime = os.time() + (Minutes ~= nil and (Minutes * 60) or 0) + (Hours ~= nil and (Hours * 60 * 60) or 0) + (Days ~= nil and (Days * 24 * 60 * 60) or 0)
     
