@@ -47,7 +47,7 @@ CommandManager.Command("help", function(Args, Payload)
 		["color"] = Config.EmbedColour,
 		["description"] = "",
 		["footer"] = {
-			["text"] = F("For more information about/how to use a command type %shelp [command name]", Prefix)
+			["text"] = F("For more information about how to use a command type %shelp [command name]", Prefix)
 		}
 	}
 
