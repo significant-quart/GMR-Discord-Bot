@@ -150,7 +150,7 @@ end
 
 --[[ Init ]]
 do
-	local Token = assert(FileReader.readFileSync("./token.txt"), "Could not find bot token. Please create a file called token.txt in the directory of your bot and put your bot token inside of it.")
+	local Token = assert(FileReader.readFileSync("./token.txt"):split("\n")[1], "Could not find bot token. Please create a file called token.txt in the directory of your bot and put your bot token inside of it.")
 
 	assert(FileReader.existsSync(Config.ModuleDir), "Could not find module directory, are you sure it is valid?")
 
