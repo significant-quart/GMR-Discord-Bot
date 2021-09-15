@@ -82,12 +82,12 @@ Interval(UpdateInterval * 1000, function()
     local ThisGMRPriceEmbed = {
         ["title"] = "GMR Coin Price Data",
         ["url"] = "https://gmr.finance/",
-        ["description"] = [[
+        ["description"] = F([[
 
-            [Buy/Sell <:gmr:887332510269313084>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+            [Buy/Sell <:%s>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
 
             Charts: [DEXTools](https://www.dextools.io/app/bsc/pair-explorer/0x007ace5397b56e19a9436fba289d7fed71c49328) | [poocoin](https://poocoin.app/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
-        ]],
+        ]], Config["GMREID"]),
         ["color"] = Config.EmbedColour,
         ["thumbnail"] = {
             ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"
@@ -140,31 +140,31 @@ Interval(UpdateInterval * 1000, function()
     end
 
     table.insert(ThisGMRPriceEmbed["fields"], {
-        ["name"] = "Price <:coingecko:843985310379016223>",
+        ["name"] = F("Price <:%s>", Config["CoingeckEID"]),
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
     table.insert(ThisGMRPriceEmbed["fields"], {
-        ["name"] = "Price <:pancakeswap:843985675816665099>",
+        ["name"] = F("Price <:%s>", Config["PancakeEID"]),
         ["value"] = (GMRData["PancakeSwap"] ~= nil and GMRData["PancakeSwap"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
     table.insert(ThisGMRPriceEmbed["fields"], {
-        ["name"] = "Price <:bitquery:858844249419022336>",
+        ["name"] = F("Price <:%s>", Config["BitqueryEID"]),
         ["value"] = (GMRData["BitQuery"] ~= nil and GMRData["BitQuery"]["Price"] or "N/A"),
         ["inline"] = true
     })
 
     table.insert(ThisGMRPriceEmbed["fields"], {
-        ["name"] = "24h Change <:coingecko:843985310379016223>",
+        ["name"] = F("24h Change <:%s>", Config["CoingeckEID"]),
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["24hChange"] and F("%s%% %s", GMRData["CoinGecko"]["24hChange"], (GMRData["CoinGecko"]["24hChange"] > 0 and ":chart_with_upwards_trend:" or ":chart_with_downwards_trend:")) or "N/A"),
         ["inline"] = false
     })
 
     table.insert(ThisGMRPriceEmbed["fields"], {
-        ["name"] = "24h Volume <:coingecko:843985310379016223>",
+        ["name"] = F("24h Volume <:%s>", Config["CoingeckEID"]),
         ["value"] = (GMRData["CoinGecko"] ~= nil and GMRData["CoinGecko"]["24hVol"] and F("$%s", CommaNumber(GMRData["CoinGecko"]["24hVol"])) or "N/A"),
         ["inline"] = false
     })
