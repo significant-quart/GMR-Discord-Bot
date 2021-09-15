@@ -84,10 +84,12 @@ Interval(UpdateInterval * 1000, function()
         ["url"] = "https://gmr.finance/",
         ["description"] = F([[
 
-            [Buy/Sell <:%s>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+            [Buy GMR on <:%s>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+
+            [Buy GMR on <:%s>](https://pancakeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
 
             Charts: [DEXTools](https://www.dextools.io/app/bsc/pair-explorer/0x007ace5397b56e19a9436fba289d7fed71c49328) | [poocoin](https://poocoin.app/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
-        ]], Config["GMREID"]),
+        ]], Config["ApeswapEID"], Config["PancakeEID"]),
         ["color"] = Config.EmbedColour,
         ["thumbnail"] = {
             ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"

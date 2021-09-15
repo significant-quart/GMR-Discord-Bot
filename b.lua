@@ -18,6 +18,7 @@ if Config._DEBUG == true then
 	Config["GMRFeedbackCID"] = "885270081670643772"
 	Config["CoingeckEID"] = "coingecko:843985310379016223"
 	Config["BitqueryEID"] = "bitquery:858844249419022336"
+	Config["ApeswapEID"] = "apeswap:887821326138634261"
 	Config["GMREID"] = "gmr:887332510269313084"
  	Config["PancakeEID"] = "pancakeswap:843985675816665099"
 	Config["FeedbackDelay"] = 10
@@ -29,6 +30,7 @@ else
 	Config["GMRFeedbackCID"] = "887788240814342245"
 	Config["CoingeckEID"] = "coingecko:887798321903710268"
 	Config["BitqueryEID"] = "BitQuery:887798309174018068"
+	Config["ApeswapEID"] = "apeswap:887821797012156486"
 	Config["GMREID"] = "GMR:840895605017935872"
 	Config["PancakeEID"] = "pancakeswap:887798337707855932"
 	Config["FeedbackDelay"] = 86400
