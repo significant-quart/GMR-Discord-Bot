@@ -22,7 +22,7 @@ BOT:on("messageCreate", function(Payload)
     if Payload.author.bot or Payload.guild ~= nil or AwaitingResponse[Payload.author.id] then return end
 
     if SentResponses[Payload.author.id] then
-        if (os.time() - SentResponses[Payload.author.id]) >= 10 then
+        if (os.time() - SentResponses[Payload.author.id]) >= Config["FeedbackDelay"] then
             SentResponses[Payload.author.id] = nil
         else
             return SimpleEmbed(Payload, "Sorry however you may only submit feedback once per 24 hours.")
@@ -84,7 +84,7 @@ end)
 
 --[[ Commands ]]
 local FeedbackCommand = CommandManager.Command("feedback", function(Args, Payload)
-end)
+end):SetCategory("Moderation Commands"):SetDescription("Control the flow of feedback from users.")
 
 FeedbackCommand:AddSubCommand("open", function(Args, Payload)
     assert(FeedBackOpen == false, "Feedback is already open.")
@@ -92,7 +92,7 @@ FeedbackCommand:AddSubCommand("open", function(Args, Payload)
     FeedBackOpen = true
 
     return SimpleEmbed(Payload, "Feedback is now open.")
-end)
+end):SetDescription("Enable feedback to be submitted.")
 
 FeedbackCommand:AddSubCommand("close", function(Args, Payload)
     assert(FeedBackOpen == true, "Feedback is already closed.")
@@ -100,8 +100,8 @@ FeedbackCommand:AddSubCommand("close", function(Args, Payload)
     FeedBackOpen = false
 
     return SimpleEmbed(Payload, "Feedback is now closed.")
-end)
+end):SetDescription("Disable feedback from being submitted.")
 
 FeedbackCommand:AddSubCommand("status", function(Args, Payload)
     return SimpleEmbed(Payload, F("Feedback is currently %s.", FeedBackOpen == true and "open" or "closed"))
-end)
+end):SetDescription("Whether or not feedback can be submitted.")

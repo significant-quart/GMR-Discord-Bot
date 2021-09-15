@@ -100,4 +100,12 @@ CommandManager.Command("remind", function(Args, Payload)
     }, true)
 
     SimpleEmbed(Payload, F("Your reminder has been successfully set for <t:%d:F>", RemindTime))
-end):SetCategory("Misc Commands"):SetDescription("Set a reminder for later.")
+end):SetCategory("Misc Commands"):SetDescription("Set a reminder for later."):SetLongDescription(F([[
+    An example reminder is as follows:
+
+    ``%sremind 5m 10h Buy some GMR token!``
+
+    The above will message you in the channel you created the reminder exactly 10 hours and 5 minutes from the moment the reminder was created with the message "Buy some GMR token!".
+
+    As of now, reminder durations can be set using ``m``, ``h`` and ``d`` to specify the minute, hour and day duration of a reminder.
+]], Prefix))

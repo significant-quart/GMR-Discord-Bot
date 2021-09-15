@@ -89,7 +89,26 @@ end
 
 --[[ Command ]]
 local PermissionsCommand = CommandManager.Command("permissions", function(Args, Payload)
-end) 
+end):SetCategory("Moderation Commands"):SetDescription("Permission commands!"):SetLongDescription(F([[
+    An example usage can be found below:
+
+    *%spermissions add price <@&%s>*
+
+    The above will enable the role <@&%s> to use the ``%sprice`` command.
+
+    *%spermissions addc "Fun Commands " <@&%s>*
+
+    The above will enable the role <@&%s> to use all commands in the ``Fun Commands`` category.
+
+    **Note: These exact same principles apply when using ``remove`` or ``removec`` however the role(s)/user(s) will not be able to use the commands in question.**
+
+    **Note: When using addc or removec double quotes must be used for specifying the command category!** 
+    **Note: you can specify as many roles or users when using the above commands.**
+
+    To see which users and roles can use which commands type the following:
+
+    ``%spermissions view``
+]], Prefix, Config["GMRVerifyRID"], Config["GMRVerifyRID"], Prefix, Prefix, Config["GMRVerifyRID"], Config["GMRVerifyRID"], Prefix, Prefix))
 
 --[[ Sub-Commands ]]
 PermissionsCommand:AddSubCommand("add", function(Args, Payload)
@@ -99,7 +118,7 @@ PermissionsCommand:AddSubCommand("add", function(Args, Payload)
     AuditPermission(Args[3], "Commands", true, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 
     SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for command:\n \n``"..Args[3].."``")
-end)
+end):SetDescription("Add role(s) and or user(s) to use a particular command.")
 
 PermissionsCommand:AddSubCommand("addc", function(Args, Payload)
     local Exists = false 
@@ -121,7 +140,7 @@ PermissionsCommand:AddSubCommand("addc", function(Args, Payload)
     AuditPermission(CommandCategory, "Categories", true, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 
     SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for category:\n \n``"..CommandCategory.."``")
-end)
+end):SetDescription("Add role(s) and or user(s) to use a particular command **category**.")
 
 PermissionsCommand:AddSubCommand("remove", function(Args, Payload)
     assert(CommandManager.Exists(Args[3]), "that command doesn't exist.")
@@ -130,7 +149,7 @@ PermissionsCommand:AddSubCommand("remove", function(Args, Payload)
     AuditPermission(Args[3], "Commands", false, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 
     SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for command:\n \n``"..Args[3].."``")
-end)
+end):SetDescription("Disable role(s) and or user(s) to use a particular command.")
 
 PermissionsCommand:AddSubCommand("removec", function(Args, Payload)
     local Exists = false 
@@ -150,10 +169,10 @@ PermissionsCommand:AddSubCommand("removec", function(Args, Payload)
     AuditPermission(CommandCategory, "Categories", false, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
 
     SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for category:\n \n``"..CommandCategory.."``")
-end)
+end):SetDescription("Disable role(s) and or user(s) to use a particular command **category**.")
 
 --[[ Commands ]]
-CommandManager.Command("view", function(Args, Payload)
+PermissionsCommand:AddSubCommand("view", function(Args, Payload)
     local Commands = CommandManager.GetAllCommands()
     local PermissionData = {}
     assert(Commands ~= nil, "there was a problem fetching all available commands.")
@@ -166,14 +185,14 @@ CommandManager.Command("view", function(Args, Payload)
             local RoleStr = ""
 
             if Permissions["Categories"][Category] and Permissions["Categories"][Category]["Roles"] then
-                for Role, _ in pairs(Permissions["Categories"][Category]["Roles"]) do
-                    RoleStr = F("%s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role))
+                for Role, Allow in pairs(Permissions["Categories"][Category]["Roles"]) do
+                    RoleStr = F("%s %s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role), (Allow == true and ":green_circle:" or ":red_circle:"))
                 end
             end
 
             if Permissions["Commands"][Name] and Permissions["Commands"][Name]["Roles"] then
-                for Role, _ in pairs(Permissions["Commands"][Name]["Roles"]) do
-                    RoleStr = F("%s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role))
+                for Role, Allow in pairs(Permissions["Commands"][Name]["Roles"]) do
+                    RoleStr = F("%s %s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role), (Allow == true and ":green_circle:" or ":red_circle:"))
                 end
             end
 
@@ -183,7 +202,7 @@ CommandManager.Command("view", function(Args, Payload)
 
             table.insert(PermissionData[Category], {
                 ["Name"] = Name,
-                ["Permissions"] = (#RoleStr > 0 and RoleStr or "Only the server owner can use this command.")
+                ["Permissions"] = (#RoleStr > 0 and RoleStr or "Only users with administrator permission can use this command.")
             })
         end
     end
@@ -209,7 +228,7 @@ CommandManager.Command("view", function(Args, Payload)
     Payload:reply{
         embed = PermissionEmbed
     }
-end)
+end):SetDescription("View the commands particular roles can use.")
 
 --[[ File Saving ]]
 Interval(DefaultInterval * 1000, function()
