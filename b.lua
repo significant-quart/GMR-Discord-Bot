@@ -36,7 +36,7 @@ local BOT = Discordia.Client {
 Discordia.extensions()
 
 --[[ Logger ]]
-local Logger = Discordia.Logger((Config._DEBUG == false and 3 or 4), "%F @ %T")
+local Logger = Discordia.Logger((Config._DEBUG == false and 3 or 4), "%F @ %T", "GMR.log")
 local Log = function(Level, ...) Logger:log(Level, ...) end
 
 --[[ Command Handler ]]
