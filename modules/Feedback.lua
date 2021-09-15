@@ -56,7 +56,7 @@ BOT:on("messageCreate", function(Payload)
             SentResponses[Payload.author.id] = os.time()
 
             local Embed = {
-                ["title"] = "Feedback from "..Payload.author.tag,
+                ["title"] = "Feedback Received!",
                 ["color"] = Config["EmbedColour"],
                 ["description"] = Payload.cleanContent,
                 ["fields"] = {}
