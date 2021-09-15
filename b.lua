@@ -25,7 +25,7 @@ if Config._DEBUG == true then
 else
 	Config["GMRGID"] = "835927915325161523"
     Config["GMRVerifyRID"] = "840619660244287489"
-    Config["GMRVerifyCID"] = "839953216274694206"
+    Config["GMRVerifyCID"] = "840634281336242198"
 	Config["GMRFeedbackCID"] = "887788240814342245"
 	Config["CoingeckEID"] = "coingecko:887798321903710268"
 	Config["BitqueryEID"] = "BitQuery:887798309174018068"
