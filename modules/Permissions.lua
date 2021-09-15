@@ -15,14 +15,14 @@ end
 _G.HasPermission = function(Member, Command, Category, Payload)
     if Member == nil then return false end
     if Payload.member:hasPermission(nil, 0x00000008) then return true end
-    if Permissions["Commands"][Command] == nil and Permissions["Categories"][Command] == nil then return false end
-    
+    if Permissions["Commands"][Command] == nil and Permissions["Categories"][Category] == nil then return false end
+
     if Category and Permissions["Categories"][Category] then
         if Permissions["Categories"][Category]["Roles"]["everyone"] and Permissions["Categories"][Category]["Roles"]["everyone"] == true then 
             return true 
         end
 
-        if  Permissions["Categories"][Category]["Users"][Member.id] and Permissions["Categories"][Category]["Users"][Member.id] == true then
+        if Permissions["Categories"][Category]["Users"][Member.id] and Permissions["Categories"][Category]["Users"][Member.id] == true then
             return true
         end
     end
