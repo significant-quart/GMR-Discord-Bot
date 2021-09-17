@@ -74,7 +74,7 @@ CommandManager.Command("whois", function(Args, Payload)
             }
         }
     }
-end):SetCategory("Fun Commands"):SetDescription("Get info about a user on discord."):SetLongDescription(F([[
+end):SetCategory("Misc Commands"):SetDescription("Get info about a user on discord."):SetLongDescription(F([[
     An example usage can be found below:
 
     *%swhois*
@@ -86,6 +86,6 @@ end):SetCategory("Fun Commands"):SetDescription("Get info about a user on discor
     Supports mentions.
     
     *%swhois 843951774834360371*
-    
+
     Supports Discord User IDs.
 ]], Prefix, Prefix, Config["GMRUID"], Prefix))
