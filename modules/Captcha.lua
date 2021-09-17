@@ -10,6 +10,7 @@ local CreateUser = DB:prepare("INSERT OR REPLACE INTO Users(UID, Word, MID) VALU
 local GetUser = DB:prepare("SELECT * FROM Users WHERE UID = ?")
 local GetWord = DB:prepare("SELECT * FROM Words ORDER BY RANDOM() LIMIT 1")
 local RemoveWord = DB:prepare("DELETE FROM Words WHERE Word = ?")
+local GetUserMessage = DB:prepare("SELECT MID FROM Users WHERE UID = ?")
 
 local Message = [[
 Welcome to the GMR.finance Discord server %s!
@@ -37,6 +38,14 @@ local function AddWords()
     end
 
     DB:exec(Stmt)
+end
+
+local function RemoveWords()
+    local badwords = ([[]]):split("\n")
+
+    for _, word in pairs(badwords) do
+        RemoveWord:reset():bind(word):step()
+    end
 end
 
 --[[ Events ]]
@@ -98,10 +107,24 @@ BOT:on("memberJoin", function(Member)
         }
 
         if Err == nil and Message.id then
+            Log(3, F("Creating/Updating user %s (%s)", Member.user.name, Member.user.id))
+
             CreateUser:reset():bind(Member.user.id, Word, Message.id):step()
         end
     end)
 end)
+
+BOT:on("memberLeave", function(Member)
+    local MID = GetUserMessage:reset():bind(Member.user.id):step()
+
+    if MID ~= nil and MID[1] and #MID[1] > 0 then
+        local OurMessage = VerifyChannel:getMessage(MID[1])
+                
+        if OurMessage then
+            OurMessage:delete()
+        end
+    end
+end )
 
 BOT:on("messageCreate", function(Payload)
     pcall(function()
@@ -110,6 +133,8 @@ BOT:on("messageCreate", function(Payload)
 
             if User ~= nil and User[2] == Payload.content then
                 Payload.member:addRole(Config["GMRVerifyRID"])
+                
+                Log(3, F("Verified %s (%s)", Payload.member.user.name, Payload.member.user.id))
 
                 if User[3] and #User[3] > 0 then
                     local OurMessage = VerifyChannel:getMessage(User[3])
