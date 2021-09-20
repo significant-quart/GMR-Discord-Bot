@@ -126,6 +126,12 @@ BOT:on("memberLeave", function(Member)
             OurMessage:delete()
         end
     end
+
+    if Responses[Member.user.id] then
+        Responses[Member.user.id]:delete()
+
+        Responses[Member.user.id] = nil
+    end
 end )
 
 BOT:on("messageCreate", function(Payload)
@@ -170,7 +176,7 @@ BOT:on("messageCreate", function(Payload)
                         end
                     end))
                 else
-                    local LastMessage, Err = SimpleEmbed(Payload, F("%s the word you typed is not correct, if you can't see your word click [__``here!``__](https://discord.com/channels/%s/%s/%s).", Payload.author.mentionString, Payload.guild.id, Payload.channel.id, User[3]))
+                    local LastMessage, Err = SimpleEmbed(Payload, F("%s the word you typed is not correct, if you can't see your word click [__``here!``__](https://discord.com/channels/%s/%s/%s)\n\n**Ensure to type the word all lowercase with correct spelling.**", Payload.author.mentionString, Payload.guild.id, Payload.channel.id, User[3]))
 
                     if LastMessage and not Err then
                         Responses[Payload.author.id] = LastMessage
