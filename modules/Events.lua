@@ -18,10 +18,12 @@ BOT:on("messageCreate", function(Payload)
 				local CommandName = Command:GetName()
 				local CommandCategory = Command:GetCategory()
 
-				if not HasPermission(Payload.member, CommandName, CommandCategory, Payload) then 
+				local Allowed, Reason = HasPermission(Payload.member, CommandName, CommandCategory, Payload.channel)
+
+				if not Allowed then 
 					Log(2, "A user just entered a command they are not allowed to enter.")
 
-					return SimpleEmbed(Payload, Payload.author.mentionString.." **you do not have permission to use that command.**")
+					return SimpleEmbed(Payload, F("%s **%s**", Payload.author.mentionString, (Reason or "you do not have permission to use that command.")))
 				end
 
 				Log(3, "Command "..CommandName.." entered by "..Payload.author.tag)

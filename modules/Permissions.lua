@@ -5,17 +5,49 @@ if not Permissions then
 
     Permissions = {
         ["Commands"] = {},
-        ["Categories"] = {}
+        ["Categories"] = {},
     }
 else
     Permissions = assert(JSON.decode(Permissions), "fatal: Failed to parse Permissions.json.")
 end
 
 --[[ External Function ]]
-_G.HasPermission = function(Member, Command, Category, Payload)
+_G.HasPermission = function(Member, Command, Category, Channel)
     if Member == nil then return false end
-    if Payload.member:hasPermission(nil, 0x00000008) then return true end
+    if Member:hasPermission(nil, 0x00000008) then return true end
     if Permissions["Commands"][Command] == nil and Permissions["Categories"][Category] == nil then return false end
+
+    local FoundChannel, Channels, i = false, {}, 0
+
+    if Command and Permissions["Commands"][Command] and Permissions["Commands"][Command]["Channels"] then
+        for CID, Allow in pairs(Permissions["Commands"][Command]["Channels"]) do
+            if Allow == true then
+                i = i + 1
+
+                table.insert(Channels, F("<#%s>", CID))
+            end
+        end
+
+        FoundChannel = (Permissions["Commands"][Command]["Channels"][Channel.id] or false)
+    end
+
+    if Category and Permissions["Categories"][Category]["Channels"] and Permissions["Categories"][Command]["Channels"] and not FoundChannel then
+        for CID, Allow in pairs(Permissions["Categories"][Category]["Channels"]) do
+            if Allow == true then
+                i = i + 1
+
+
+                table.insert(Channels, F("<#%s>", CID))
+            end
+        end
+
+        FoundChannel = (Permissions["Categories"][Category]["Channels"][Channel.id] or false)
+    end
+
+    if FoundChannel == false then 
+        p(Channels, table.concat(Channels, ",\n"))
+        return false, F("this command is not available in this channel.\n\nAvailable Channels:\n%s", (i > 0 and table.concat(Channels, ",\n") or "This command is not available in any channel!"))
+    end
 
     if Category and Permissions["Categories"][Category] then
         if Permissions["Categories"][Category]["Roles"]["everyone"] and Permissions["Categories"][Category]["Roles"]["everyone"] == true then 
@@ -54,15 +86,17 @@ _G.HasPermission = function(Member, Command, Category, Payload)
     return false
 end
 
-function AuditPermission(Command, Type, Allow, MRoles, MUsers, OtherRoles)
-    print("Adding permission for "..Command..": type = "..Type..": allow = "..tostring(Allow)..": other = "..(OtherRoles or "none"))
-
+function AuditPermission(Command, Type, Allow, MRoles, MUsers, MChannels, OtherRoles)
     if Permissions[Type][Command] == nil then
         Permissions[Type][Command] = {
             ["Users"] = {},
             ["Roles"] = {}
         }
     end 
+
+    if Permissions[Type][Command]["Channels"] == nil then
+        Permissions[Type][Command]["Channels"] = {}
+    end
 
     if #MRoles > 0 then
         for RID, _ in pairs(MRoles) do
@@ -76,6 +110,12 @@ function AuditPermission(Command, Type, Allow, MRoles, MUsers, OtherRoles)
         end 
     end
     
+    if #MChannels > 0 then 
+        for CID, _ in pairs(MChannels) do
+            Permissions[Type][Command]["Channels"][CID] = Allow
+        end 
+    end
+
     if OtherRoles then
         Permissions[Type][Command]["Roles"][OtherRoles] = Allow
     end
@@ -113,12 +153,12 @@ end):SetCategory("Moderation Commands"):SetDescription("Permission commands!"):S
 --[[ Sub-Commands ]]
 PermissionsCommand:AddSubCommand("add", function(Args, Payload)
     assert(CommandManager.Exists(Args[3]), "that command doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..Args[3].."`` command permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or #(Payload.mentionedChannels) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..Args[3].."`` command permissions.")
 
-    AuditPermission(Args[3], "Commands", true, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
+    AuditPermission(Args[3], "Commands", true, Payload.mentionedRoles, Payload.mentionedUsers, Payload.mentionedChannels, (Payload.mentionsEveryone == true and "everyone" or nil))
 
-    SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for command:\n \n``"..Args[3].."``")
-end):SetDescription("Add role(s) and or user(s) to use a particular command.")
+    SimpleEmbed(Payload, Payload.author.mentionString.." updated permissions for command:\n \n``"..Args[3].."``")
+end):SetDescription("Allow roles, users or channels to use a particular command.")
 
 PermissionsCommand:AddSubCommand("addc", function(Args, Payload)
     local Exists = false 
@@ -135,21 +175,21 @@ PermissionsCommand:AddSubCommand("addc", function(Args, Payload)
     end
 
     assert(Exists == true, "that command category doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..CommandCategory.."`` command category permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or #(Payload.mentionedChannels) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to add to the ``"..CommandCategory.."`` command category permissions.")
 
-    AuditPermission(CommandCategory, "Categories", true, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
+    AuditPermission(CommandCategory, "Categories", true, Payload.mentionedRoles, Payload.mentionedUsers, Payload.mentionedChannels, (Payload.mentionsEveryone == true and "everyone" or nil))
 
-    SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for category:\n \n``"..CommandCategory.."``")
-end):SetDescription("Add role(s) and or user(s) to use a particular command **category**.")
+    SimpleEmbed(Payload, Payload.author.mentionString.." updated permissions for category:\n \n``"..CommandCategory.."``")
+end):SetDescription("Allow roles, users or channels to use a particular command **category**.")
 
 PermissionsCommand:AddSubCommand("remove", function(Args, Payload)
     assert(CommandManager.Exists(Args[3]), "that command doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..Args[3].."`` command permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or #(Payload.mentionedChannels) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..Args[3].."`` command permissions.")
     
-    AuditPermission(Args[3], "Commands", false, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
+    AuditPermission(Args[3], "Commands", false, Payload.mentionedRoles, Payload.mentionedUsers, Payload.mentionedChannels, (Payload.mentionsEveryone == true and "everyone" or nil))
 
-    SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for command:\n \n``"..Args[3].."``")
-end):SetDescription("Disable role(s) and or user(s) to use a particular command.")
+    SimpleEmbed(Payload, Payload.author.mentionString.." updated permissions for command:\n \n``"..Args[3].."``")
+end):SetDescription("Disallow roles, users or channels to use a particular command.")
 
 PermissionsCommand:AddSubCommand("removec", function(Args, Payload)
     local Exists = false 
@@ -164,12 +204,12 @@ PermissionsCommand:AddSubCommand("removec", function(Args, Payload)
     end
 
     assert(Exists == true, "that command category doesn't exist.")
-    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..CommandCategory.."`` command category permissions.")
+    assert(#(Payload.mentionedRoles) > 0 or #(Payload.mentionedUsers) > 0 or #(Payload.mentionedChannels) > 0 or Payload.mentionsEveryone == true, "you need to provide role(s) and/or user(s) to remove from the ``"..CommandCategory.."`` command category permissions.")
 
-    AuditPermission(CommandCategory, "Categories", false, Payload.mentionedRoles, Payload.mentionedUsers, (Payload.mentionsEveryone == true and "everyone" or nil))
+    AuditPermission(CommandCategory, "Categories", false, Payload.mentionedRoles, Payload.mentionedUsers, Payload.mentionedChannels, (Payload.mentionsEveryone == true and "everyone" or nil))
 
-    SimpleEmbed(Payload, Payload.author.mentionString.." updated role(s) and/or user(s) permissions for category:\n \n``"..CommandCategory.."``")
-end):SetDescription("Disable role(s) and or user(s) to use a particular command **category**.")
+    SimpleEmbed(Payload, Payload.author.mentionString.." updated permissions for category:\n \n``"..CommandCategory.."``")
+end):SetDescription("Disallow roles, users or channels to use a particular command **category**.")
 
 --[[ Commands ]]
 PermissionsCommand:AddSubCommand("view", function(Args, Payload)
@@ -184,15 +224,32 @@ PermissionsCommand:AddSubCommand("view", function(Args, Payload)
         if Category and Name then
             local RoleStr = ""
 
-            if Permissions["Categories"][Category] and Permissions["Categories"][Category]["Roles"] then
-                for Role, Allow in pairs(Permissions["Categories"][Category]["Roles"]) do
-                    RoleStr = F("%s %s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role), (Allow == true and ":green_circle:" or ":red_circle:"))
+            if Permissions["Categories"][Category] then
+                if Permissions["Categories"][Category]["Roles"] then
+                    for RID, Allow in pairs(Permissions["Categories"][Category]["Roles"]) do
+                        RoleStr = F("%s %s %s", RoleStr, (RID ~= "everyone" and F("<@&%s>", RID) or RID), (Allow == true and ":green_circle:" or ":red_circle:"))
+                    end
                 end
+
+                if Permissions["Categories"][Category]["Channels"] then
+                    for CID, Allow in pairs(Permissions["Categories"][Category]["Channels"]) do
+                        RoleStr = F("%s %s %s", RoleStr, F("<#%s>", CID), (Allow == true and ":green_circle:" or ":red_circle:"))
+                    end
+                end
+
             end
 
-            if Permissions["Commands"][Name] and Permissions["Commands"][Name]["Roles"] then
-                for Role, Allow in pairs(Permissions["Commands"][Name]["Roles"]) do
-                    RoleStr = F("%s %s %s", RoleStr, (Role ~= "everyone" and "<@&"..Role..">" or Role), (Allow == true and ":green_circle:" or ":red_circle:"))
+            if Permissions["Commands"][Name] then
+                if Permissions["Commands"][Name]["Roles"] then
+                    for RID, Allow in pairs(Permissions["Commands"][Name]["Roles"]) do
+                        RoleStr = F("%s %s %s", RoleStr, (RID ~= "everyone" and F("<@&%s>", RID) or RID), (Allow == true and ":green_circle:" or ":red_circle:"))
+                    end
+                end
+
+                if Permissions["Commands"][Name]["Channels"] then
+                    for CID, Allow in pairs(Permissions["Commands"][Name]["Channels"]) do
+                        RoleStr = F("%s %s %s", RoleStr, F("<#%s>", CID), (Allow == true and ":green_circle:" or ":red_circle:"))
+                    end
                 end
             end
 
