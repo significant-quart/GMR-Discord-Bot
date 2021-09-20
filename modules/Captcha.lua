@@ -1,5 +1,7 @@
 --[[ Variables ]]
 local VerifyChannel
+local Responses = {}
+local SuccessMessageDelete = 10
 
 --[[ Database ]]
 local DB = assert(SQL.open(Config.ModuleDir.."/Captcha.db"), "fatal: to open Captcha database!")
@@ -131,16 +133,47 @@ BOT:on("messageCreate", function(Payload)
         if Payload.guild and Payload.guild.id == Config["GMRGID"] and Payload.author and not Payload.author.bot and Payload.channel and Payload.channel.id == Config["GMRVerifyCID"] then
             local User = GetUser:reset():bind(Payload.author.id):step()
 
-            if User ~= nil and User[2] == Payload.content then
-                Payload.member:addRole(Config["GMRVerifyRID"])
-                
-                Log(3, F("Verified %s (%s)", Payload.member.user.name, Payload.member.user.id))
+            if User ~= nil then
+                if Responses[Payload.author.id] then
+                    Responses[Payload.author.id]:delete()
 
-                if User[3] and #User[3] > 0 then
-                    local OurMessage = VerifyChannel:getMessage(User[3])
-                
-                    if OurMessage then
-                        OurMessage:delete()
+                    Responses[Payload.author.id] = nil
+                end
+
+                if User[2] == Payload.content then
+                    Payload.member:addRole(Config["GMRVerifyRID"])
+                    
+                    Log(3, F("Verified %s (%s)", Payload.member.user.name, Payload.member.user.id))
+
+                    if User[3] and #User[3] > 0 then
+                        local OurMessage = VerifyChannel:getMessage(User[3])
+                    
+                        if OurMessage then
+                            OurMessage:delete()
+                        end
+                    end
+
+                    local Embed = SimpleEmbed(nil, F("%s **verification successful!\n\nWelcome to the GMR.finance Discord!**", Payload.author.mentionString))
+                    Embed["thumbnail"] = {
+                        ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"
+                    }
+
+                    local SuccessMessage, Err = VerifyChannel:send {
+                        embed = Embed
+                    }
+
+                    Routine.setTimeout(SuccessMessageDelete * 1000, coroutine.wrap(function()
+                        if SuccessMessage and not Err then
+                            SuccessMessage:delete()
+
+                            SuccessMessage, Err = nil, nil
+                        end
+                    end))
+                else
+                    local LastMessage, Err = SimpleEmbed(Payload, F("%s the word you typed is not correct, if you can't see your word click [__``here!``__](https://discord.com/channels/%s/%s/%s).", Payload.author.mentionString, Payload.guild.id, Payload.channel.id, User[3]))
+
+                    if LastMessage and not Err then
+                        Responses[Payload.author.id] = LastMessage
                     end
                 end
             end
