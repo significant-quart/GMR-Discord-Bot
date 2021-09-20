@@ -31,7 +31,7 @@ _G.HasPermission = function(Member, Command, Category, Channel)
         FoundChannel = (Permissions["Commands"][Command]["Channels"][Channel.id] or false)
     end
 
-    if Category and Permissions["Categories"][Category]and Permissions["Categories"][Category]["Channels"] and not FoundChannel then
+    if Category and Permissions["Categories"][Category] and Permissions["Categories"][Category]["Channels"] and not FoundChannel then
         for CID, Allow in pairs(Permissions["Categories"][Category]["Channels"]) do
             if Allow == true then
                 i = i + 1
