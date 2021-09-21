@@ -45,7 +45,6 @@ _G.HasPermission = function(Member, Command, Category, Channel)
     end
 
     if FoundChannel == false then 
-        p(Channels, table.concat(Channels, ",\n"))
         return false, F("this command is not available in this channel.\n\nAvailable Channels:\n%s", (i > 0 and table.concat(Channels, ",\n") or "This command is not available in any channel!"))
     end
 

@@ -72,8 +72,6 @@ end):SetCategory("GMR Commands"):SetDescription("Current price, 24h change and m
 
 --[[ Price Updates ]]
 Interval(UpdateInterval * 1000, function()
-    local GMRData = {}
-
     local ThisGMRPriceEmbed = {
         ["title"] = "GMR Coin Price Data",
         ["url"] = "https://gmr.finance/",
