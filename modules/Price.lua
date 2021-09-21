@@ -38,7 +38,7 @@ local function GetSuperScript(N)
     return SuperN
 end
 
-local function GetCoinGeckoPrice(Price)
+local function GetPriceFromSF(Price)
     if Price:sub(2, 2) == "e" then
         Price = Price:gsub("e", ".0e")
     end
@@ -59,13 +59,6 @@ local function GetCoinGeckoPrice(Price)
     Zeros = Zeros..string.rep("0", math.abs(Exponent))
     
     return "$"..(Exponent > 0 and Characteristic..Zeros or Zeros..Characteristic)
-end
-
-local function GetPancakeSwapPrice(Price)
-    local ZeroOffset = #Price:match("%.0+") + 2
-    local RoundedNum = Price:sub(ZeroOffset, (#Price - ZeroOffset > 2 and ZeroOffset + 2 or #Price))
-
-    return "$0."..("0"):rep(ZeroOffset - 3)..RoundedNum
 end
 
 --[[ Commands ]]
@@ -108,7 +101,7 @@ Interval(UpdateInterval * 1000, function()
     if Success then
         table.insert(ThisGMRPriceEmbed["fields"], {
             ["name"] = F("Price"),
-            ["value"] = (Data["price_usd"] ~= nil and GetCoinGeckoPrice(tostring(Data["price_usd"])) or "Unavailable"),
+            ["value"] = (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"])) or "Unavailable"),
             ["inline"] = true
         })
 
