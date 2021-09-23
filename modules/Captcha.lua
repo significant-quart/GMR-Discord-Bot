@@ -3,8 +3,10 @@ local VerifyChannel
 local Responses = {}
 local SuccessMessageDelete = 10
 
+local Exists = FileReader.existsSync(ModuleDir.."/Captcha.db")
+
 --[[ Database ]]
-local DB = assert(SQL.open(Config.ModuleDir.."/Captcha.db"), "fatal: to open Captcha database!")
+local DB = assert(SQL.open(ModuleDir.."/Captcha.db"), "fatal: to open Captcha database!")
 DB:exec("CREATE TABLE IF NOT EXISTS Words(Word TEXT);")
 DB:exec("CREATE TABLE IF NOT EXISTS Users(UID TEXT PRIMARY KEY, Word TEXT, MID TEXT);")
 
@@ -14,45 +16,27 @@ local GetWord = DB:prepare("SELECT * FROM Words ORDER BY RANDOM() LIMIT 1")
 local RemoveWord = DB:prepare("DELETE FROM Words WHERE Word = ?")
 local GetUserMessage = DB:prepare("SELECT MID FROM Users WHERE UID = ?")
 
-local Message = [[
-Welcome to the GMR.finance Discord server %s!
-
-**To get verified please type the message that is highlighted below in this channel!**
-
-``%s``
-]]
-
 local Ready = false
 
-
 local function AddWords()
-    local Words = assert(JSON.decode(FileReader.readFileSync(ModuleDir.."/Captcha.json")), "fatal: Failed to read or parse Captcha.json!")
-    local WordsIpair = {}
-
-    for k, Word in pairs(Words) do
-        table.insert(WordsIpair, Word)
-    end
+    local Words = assert(FileReader.readFileSync(ModuleDir.."/Captcha.txt"):split("\n"), "fatal: Failed to read or parse Captcha.json!")
 
     local Stmt = [[INSERT INTO Words(Word) VALUES]]
 
-    for i, Word in pairs(WordsIpair) do
-        Stmt = Stmt.."\n"..F([[("%s")%s]], Word, (i < #WordsIpair and "," or ""))
+    for i, Word in pairs(Words) do
+        Stmt = Stmt.."\n"..F([[("%s")%s]], Word, (i < #Words and "," or ""))
     end
 
     DB:exec(Stmt)
 end
 
-local function RemoveWords()
-    local badwords = ([[]]):split("\n")
-
-    for _, word in pairs(badwords) do
-        RemoveWord:reset():bind(word):step()
-    end
-end
-
 --[[ Events ]]
 BOT:on("ready", function()
     if Ready == true then return end
+
+    if not Exists then
+        AddWords()
+    end
 
     VerifyChannel = assert(BOT:getChannel(Config["GMRVerifyCID"]), "fatal: Failure fetching GMR verification channel!")
 end)

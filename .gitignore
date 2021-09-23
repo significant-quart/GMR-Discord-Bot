@@ -12,7 +12,7 @@ deps/
 
 modules/*.db
 
-modules/Captcha.json
+modules/Captcha.txt
 modules/ClashPlayers.json
 modules/Permissions.json
 
