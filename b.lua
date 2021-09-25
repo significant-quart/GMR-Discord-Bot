@@ -14,6 +14,7 @@ local Config = assert(JSON.decode(FileReader.readFileSync("Base.json")), "Failed
 if Config._DEBUG == true then
 	Config["GMRGID"] = "843951362907439135"
 	Config["GMRUID"] = "843951774834360371"
+	Config["DefaultInterval"] = 5
 	Config["GMRVerifyRID"] = "883084646433300501"
 	Config["GMRVerifyCID"] = "883087815326466048"
 	Config["GMRFeedbackCID"] = "885270081670643772"
@@ -23,10 +24,10 @@ if Config._DEBUG == true then
 	Config["GMREID"] = "gmr:887332510269313084"
  	Config["PancakeEID"] = "pancakeswap:843985675816665099"
 	Config["FeedbackDelay"] = 10
-	Config["CoCAPIKey"] = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjQ1YmM1ZDQ0LWVmN2MtNDNhZi1hZmE1LTMzMGQ1YTI4NjNkMSIsImlhdCI6MTYzMDE3MjI1Mywic3ViIjoiZGV2ZWxvcGVyLzBiOTMxMTg0LWQwODctODgwMi1mMWFlLTYzMTczZmI1Y2YwMSIsInNjb3BlcyI6WyJjbGFzaCJdLCJsaW1pdHMiOlt7InRpZXIiOiJkZXZlbG9wZXIvc2lsdmVyIiwidHlwZSI6InRocm90dGxpbmcifSx7ImNpZHJzIjpbIjkyLjcuMTY4LjQxIl0sInR5cGUiOiJjbGllbnQifV19.j3xHD8iOXuKrwGn-NlXj4mwzf6XZ7-Mm63ycL55qDU27OCN7MJTrCRm33zHPRreeOtl0P03pfJo5UeP85GLV8Q"
 else
 	Config["GMRGID"] = "835927915325161523"
 	Config["GMRUID"] = "887775198944821279"
+	Config["DefaultInterval"] = 30
     Config["GMRVerifyRID"] = "840619660244287489"
     Config["GMRVerifyCID"] = "840634281336242198"
 	Config["GMRFeedbackCID"] = "887788240814342245"

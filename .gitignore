@@ -12,12 +12,10 @@ deps/
 
 modules/*.db
 
-modules/Captcha.txt
 modules/ClashPlayers.json
 modules/Permissions.json
 
 modules/Clash.lua
-
 modules/Dev.lua
 
 *.dll

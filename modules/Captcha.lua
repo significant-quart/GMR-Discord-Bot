@@ -6,7 +6,7 @@ local SuccessMessageDelete = 10
 local Exists = FileReader.existsSync(ModuleDir.."/Captcha.db")
 
 --[[ Database ]]
-local DB = assert(SQL.open(ModuleDir.."/Captcha.db"), "fatal: to open Captcha database!")
+local DB = assert(SQL.open(ModuleDir.."/Captcha.db"), "fatal: Failed to open Captcha database!")
 DB:exec("CREATE TABLE IF NOT EXISTS Words(Word TEXT);")
 DB:exec("CREATE TABLE IF NOT EXISTS Users(UID TEXT PRIMARY KEY, Word TEXT, MID TEXT);")
 
@@ -28,6 +28,7 @@ local function AddWords()
     end
 
     DB:exec(Stmt)
+    Log(3, "Added words to Captcha.db.")
 end
 
 --[[ Events ]]
