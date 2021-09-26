@@ -38,12 +38,11 @@ _G.HasPermission = function(Member, Command, Category, Channel)
             if Allow == true then
                 i = i + 1
 
-
                 table.insert(Channels, F("<#%s>", CID))
             end
         end
 
-        FoundChannel = (Permissions["Categories"][Category]["Channels"][Channel.id] or Permissions["Commands"][Command]["Channels"]["everything"] or false)
+        FoundChannel = (Permissions["Categories"][Category]["Channels"][Channel.id] or Permissions["Categories"][Category]["Channels"]["everything"] or false)
     end
 
     if FoundChannel == false then 
@@ -91,13 +90,14 @@ function AuditPermission(Command, Type, Allow, MRoles, MUsers, MChannels, AllCha
     if Permissions[Type][Command] == nil then
         Permissions[Type][Command] = {
             ["Users"] = {},
-            ["Roles"] = {}
+            ["Roles"] = {},
+            ["Channels"] = {}
         }
+    else        
+        if Permissions[Type][Command]["Channels"] == nil then
+            Permissions[Type][Command]["Channels"] = {}
+        end
     end 
-
-    if Permissions[Type][Command]["Channels"] == nil then
-        Permissions[Type][Command]["Channels"] = {}
-    end
 
     if #MRoles > 0 then
         for RID, _ in pairs(MRoles) do
