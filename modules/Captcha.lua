@@ -66,7 +66,7 @@ BOT:on("memberJoin", function(Member)
         local Arrow = string.rep("=", 23 - math.ceil(#Word/4))
 
         Embed = {
-            ["description"] = F([[Welcome to the GMR.finance Discord server %s!
+            ["description"] = F([[Welcome to the GMR.finance Discord server!
 
             **To get verified please type the message that is highlighted below in this channel!**]], Member.user.mentionString),
             ["color"] = Config.EmbedColour,
@@ -90,6 +90,7 @@ BOT:on("memberJoin", function(Member)
         }
 
         local Message, Err = VerifyChannel:send {
+            content = Member.user.mentionString,
             embed = Embed
         }
 
