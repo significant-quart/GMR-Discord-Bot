@@ -31,7 +31,6 @@ end
 local Tag = CommandManager.Command("tag", function(Args, Payload)
     assert(Args[2], "")
 
-    print(ReturnRestOfCommand(Args, 2):gsub("%s<#[0-9]+>", ""))
     local TagName = ReturnRestOfCommand(Args, 2):gsub("%s<#[0-9]+>", "")
 
     local Tag = GetTagSTMT:reset():bind(TagName):step()
