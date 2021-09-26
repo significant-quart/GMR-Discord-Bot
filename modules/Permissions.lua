@@ -148,9 +148,9 @@ end):SetCategory("Moderation Commands"):SetDescription("Permission commands!"):S
     **Notes:
     > These exact same principles apply when using ``remove`` or ``removec`` however the role(s)/user(s)/channel(s) will not be able to use the commands in question.
 
-    > When using the ``addc or ``removec`` commands, double quotes must be used for specifying the command category!
+    > When using the ``addc`` or ``removec`` commands, double quotes must be used for specifying the command category!
 
-    > You can specify as many roles/users or channels when using the above commands.
+    > You can specify as many roles, users or channels when using the above commands.
     
     > To enable a command for all channels use #everything when auditing a permission.**
 
