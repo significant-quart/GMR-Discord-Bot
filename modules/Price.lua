@@ -1,5 +1,4 @@
 --[[ Variables ]]
-local UpdateInterval = 30
 local GMRPriceEmbed
 local ChainID, GMRContract = 56, "0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7"
 
@@ -63,7 +62,7 @@ end
 
 --[[ Commands ]]
 CommandManager.Command("price", function(Args, Payload)
-    assert(GMRPriceEmbed ~= nil, F("sorry however there is no price information available at the moment, please allow up to %d seconds.", UpdateInterval))
+    assert(GMRPriceEmbed ~= nil, F("sorry however there is no price information available at the moment, please allow up to %d seconds.", Config["DefaultInterval"]))
 
     Payload:reply {
         embed = GMRPriceEmbed
@@ -71,7 +70,7 @@ CommandManager.Command("price", function(Args, Payload)
 end):SetCategory("GMR Commands"):SetDescription("Current price, 24h change and more about GMR.")
 
 --[[ Price Updates ]]
-Interval(UpdateInterval * 1000, function()
+Interval(Config["DefaultInterval"] * 1000, function()
     local ThisGMRPriceEmbed = {
         ["title"] = "GMR Coin Price Data",
         ["url"] = "https://gmr.finance/",
@@ -93,7 +92,7 @@ Interval(UpdateInterval * 1000, function()
     }
 
     local Success, Data = pcall(APIGet, F("https://api.dev.dex.guru/v1/chain/%d/tokens/%s/market", ChainID, GMRContract), {
-        { "api-key", "FkNZol7ZFovXY7zMC_w22SucE9J5HO1bf5XYRZO5S7E" }
+        { "api-key", Config["API"]["DEXGuru"] }
     })
 
     if Success then
