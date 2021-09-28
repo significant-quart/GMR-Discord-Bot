@@ -167,7 +167,7 @@ Interval(Config["DefaultInterval"] * 1000, function()
                     embed = GMRPriceEmbed
                 }
             else
-                PriceChannel:send {
+                LastMessage = PriceChannel:send {
                     embed = GMRPriceEmbed
                 }
             end
