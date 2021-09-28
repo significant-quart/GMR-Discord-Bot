@@ -9,7 +9,7 @@ local PP = require("pretty-print")
 local SQL = require("sqlite3")
 
 --[[ Config ]]
-local Config = assert(JSON.decode(FileReader.readFileSync("Base.json")), "Failed to read or parse Base.json!")
+local Config = assert(JSON.decode(FileReader.readFileSync("Config.json")), "Failed to read or parse Base.json!")
 
 if Config._DEBUG == true then
 	Config["GMRGID"] = "843951362907439135"
@@ -24,6 +24,8 @@ if Config._DEBUG == true then
 	Config["GMREID"] = "gmr:887332510269313084"
  	Config["PancakeEID"] = "pancakeswap:843985675816665099"
 	Config["FeedbackDelay"] = 10
+	Config["PriceCID"] = "892480405805072444"
+	Config["PriceMCID"] = "892482713322418196"
 else
 	Config["GMRGID"] = "835927915325161523"
 	Config["GMRUID"] = "887775198944821279"
@@ -37,6 +39,8 @@ else
 	Config["GMREID"] = "GMR:840895605017935872"
 	Config["PancakeEID"] = "pancakeswap:887798337707855932"
 	Config["FeedbackDelay"] = 86400
+	Config["PriceCID"] = ""
+	Config["PriceMCID"] = ""
 end
 
 --[[ Discord Utils ]]

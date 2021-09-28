@@ -196,7 +196,7 @@ local TriviaCommand = CommandManager.Command("trivia", function(Args, Payload)
 
     if Args[2] ~= nil then
         Args[2] = tonumber(Args[2])
-        assert(Args[2] ~= nil and CategoriesIndexMap[Args[2]] ~= nil, F("that is an invalid category, use ``%strivia categories`` to list them all.", Config.Prefix)) 
+        assert(Args[2] ~= nil and CategoriesIndexMap[Args[2]] ~= nil, F("that is an invalid category, use ``%strivia categories`` to list them all.", Prefix)) 
 
         TriviaArgs = TriviaArgs.."&category="..Categories[CategoriesIndexMap[Args[2]]]
     end
@@ -262,5 +262,5 @@ TriviaCommand:AddSubCommand("categories", function(Args, Payload)
         CategoryString = CategoryString..F("\n``%s%s``: %s", (i < 10 and "0" or ""), i, CategoriesIndexMap[i])
     end
     
-    SimpleEmbed(Payload, F("%s\n \nSimply do ``%strivia [Cateogry Number]`` to get a question from a specific category.", CategoryString, Prefix))
+    SimpleEmbed(Payload, F("%s\n \nSimply do ``%strivia [Category Number]`` to get a question from a specific category.", CategoryString, Prefix))
 end)

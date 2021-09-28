@@ -1,5 +1,5 @@
 --[[ Database ]]
-local DB = assert(SQL.open(Config.ModuleDir.."/Reminder.db"), [[failed to open Reminder database - "remind" command will not work!]])
+local DB = assert(SQL.open(ModuleDir.."/Reminder.db"), [[failed to open Reminder database - "remind" command will not work!]])
 DB:exec("CREATE TABLE IF NOT EXISTS Reminder(ID INTEGER PRIMARY KEY AUTOINCREMENT, Start INTEGER, Duration INTEGER, Message TEXT, CID TEXT, Owner TEXT);")
 
 local AddReminderSTMT = DB:prepare("INSERT INTO Reminder(Start, Duration, Message, CID, Owner) VALUES(?, ?, ?, ?, ?)")

@@ -66,7 +66,7 @@ BOT:on("memberJoin", function(Member)
         local Arrow = string.rep("=", 23 - math.ceil(#Word/4))
 
         Embed = {
-            ["description"] = F([[Welcome to the GMR.finance Discord server!
+            ["description"] = F([[Welcome to the GMR Official Discord server!
 
             **To get verified please type the message that is highlighted below in this channel!**]], Member.user.mentionString),
             ["color"] = Config.EmbedColour,
@@ -145,7 +145,7 @@ BOT:on("messageCreate", function(Payload)
                         end
                     end
 
-                    local Embed = SimpleEmbed(nil, F("%s **verification successful!\n\nWelcome to the GMR.finance Discord!**", Payload.author.mentionString))
+                    local Embed = SimpleEmbed(nil, F("%s **verification successful!\n\nWelcome to the GMR Official Discord!**", Payload.author.mentionString))
                     Embed["thumbnail"] = {
                         ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"
                     }
