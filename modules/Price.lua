@@ -163,13 +163,10 @@ Interval(Config["DefaultInterval"] * 1000, function()
 
         if PriceChannel and not Err then
             if LastMessage then
-                LastMessage:delete()
-                LastMessage = nil
+                LastMessage:update {
+                    embed = GMRPriceEmbed
+                }
             end
-
-            LastMessage = PriceChannel:send {
-                embed = GMRPriceEmbed
-            }
         end
     else
         GMRPriceEmbed = nil
