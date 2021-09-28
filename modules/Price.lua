@@ -167,8 +167,6 @@ Interval(Config["DefaultInterval"] * 1000, function()
                 LastMessage = nil
             end
 
-            print("Sending..")
-
             LastMessage = PriceChannel:send {
                 embed = GMRPriceEmbed
             }
