@@ -39,8 +39,8 @@ else
 	Config["GMREID"] = "GMR:840895605017935872"
 	Config["PancakeEID"] = "pancakeswap:887798337707855932"
 	Config["FeedbackDelay"] = 86400
-	Config["PriceCID"] = ""
-	Config["PriceMCID"] = ""
+	Config["PriceCID"] = "892472021693366292"
+	Config["PriceMCID"] = "892001317227204618"
 end
 
 --[[ Discord Utils ]]

@@ -2,6 +2,26 @@
 local GMRPriceEmbed
 local ChainID, GMRContract = 56, "0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7"
 
+local LastMessage
+
+local Ready = false
+
+--[[ Events ]]
+BOT:on("ready", function()
+    if Ready == true then return end
+
+    Ready = true
+
+    local PriceChannel, Err = BOT:getChannel(Config["PriceMCID"])
+    if PriceChannel and not Err then
+        local LatestMessage = PriceChannel:getLastMessage()
+
+        if LatestMessage then
+            LastMessage = LatestMessage
+        end
+    end
+end)
+
 --[[ Functions ]]
 local function APIGet(URL, Headers, Body)
     local Res, Body = HTTP.request((Body ~= nil and "POST" or "GET"), URL, Headers, Body)
@@ -133,6 +153,26 @@ Interval(Config["DefaultInterval"] * 1000, function()
         })
     
         GMRPriceEmbed = ThisGMRPriceEmbed
+
+        local PriceChannel, Err = BOT:getChannel(Config["PriceCID"])
+        if PriceChannel and not Err then
+            PriceChannel:setName(F("Price: %s", (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"])) or "Unavailable")))
+        end
+
+        local PriceChannel, Err = BOT:getChannel(Config["PriceMCID"])
+
+        if PriceChannel and not Err then
+            if LastMessage then
+                LastMessage:delete()
+                LastMessage = nil
+            end
+
+            print("Sending..")
+
+            LastMessage = PriceChannel:send {
+                embed = GMRPriceEmbed
+            }
+        end
     else
         GMRPriceEmbed = nil
     end
