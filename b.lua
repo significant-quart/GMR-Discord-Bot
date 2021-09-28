@@ -24,7 +24,7 @@ if Config._DEBUG == true then
 	Config["GMREID"] = "gmr:887332510269313084"
  	Config["PancakeEID"] = "pancakeswap:843985675816665099"
 	Config["FeedbackDelay"] = 10
-	Config["PriceCID"] = "892480405805072444"
+	Config["PriceCID"] = "885265881289097237"
 	Config["PriceMCID"] = "892482713322418196"
 else
 	Config["GMRGID"] = "835927915325161523"

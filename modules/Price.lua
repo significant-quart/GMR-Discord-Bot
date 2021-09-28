@@ -57,7 +57,7 @@ local function GetSuperScript(N)
     return SuperN
 end
 
-local function GetPriceFromSF(Price)
+local function GetPriceFromSF(Price, Sign)
     if Price:sub(2, 2) == "e" then
         Price = Price:gsub("e", ".0e")
     end
@@ -77,7 +77,7 @@ local function GetPriceFromSF(Price)
 
     Zeros = Zeros..string.rep("0", math.abs(Exponent))
     
-    return "$"..(Exponent > 0 and Characteristic..Zeros or Zeros..Characteristic)
+    return (Sign and "$" or "")..(Exponent > 0 and Characteristic..Zeros or Zeros..Characteristic)
 end
 
 --[[ Commands ]]
@@ -118,7 +118,7 @@ Interval(Config["DefaultInterval"] * 1000, function()
     if Success then
         table.insert(ThisGMRPriceEmbed["fields"], {
             ["name"] = F("Price"),
-            ["value"] = (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"])) or "Unavailable"),
+            ["value"] = (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"]), true) or "Unavailable"),
             ["inline"] = true
         })
 
@@ -156,7 +156,7 @@ Interval(Config["DefaultInterval"] * 1000, function()
 
         local PriceChannel, Err = BOT:getChannel(Config["PriceCID"])
         if PriceChannel and not Err then
-            PriceChannel:setName(F("Price: %s", (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"])) or "Unavailable")))
+            PriceChannel:setName(F("💲 %s", (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"]), false) or "Unavailable")))
         end
 
         local PriceChannel, Err = BOT:getChannel(Config["PriceMCID"])
