@@ -43,7 +43,7 @@ else
 	Config["FeedbackDelay"] = 86400
 	Config["PriceCID"] = "892472021693366292"
 	Config["PriceMCID"] = "892001317227204618"
-	Config["DeletionCID"] = "904028005024813086"
+	Config["DeletionCID"] = "904028726252163102"
 	Config["MassDeletionCID"] = "904028194796085328"
 end
 
