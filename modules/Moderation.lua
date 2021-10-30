@@ -33,6 +33,35 @@ local function HandleDeletion(Message)
         })
 
         if not Member then
+            local CurrentBan
+ 
+            for _, AuditLog in pairs(Message.guild:getAuditLogs({["type"] = 22})) do
+                if AuditLog.targetId == Message.author.id then
+                    local BanTime = AuditLog:getDate():toSeconds()
+
+                    if not CurrentBan then
+                        CurrentBan = {
+                            ["TimeStamp"] = BanTime,
+                            ["UID"] = AuditLog.userId
+                        }
+                    else
+                        CurrentBan = (BanTime < CurrentBan["TimeStamp"] and {
+                            ["TimeStamp"] = BanTime,
+                            ["UID"] = AuditLog.userId
+                        } or CurrentBan)
+                    end
+                end
+            end
+
+            if CurrentBan then
+                CurrentBan["Banner"] = Message.guild:getMember(CurrentBan.UID)
+            end
+
+            table.insert(Embed["fields"], {
+                ["name"] = "** **",
+                ["value"] = (CurrentBan["Banner"] and F("This user was banned by %s", CurrentBan["Banner"].mentionString) or "")
+            })
+
             MassDeletionC:send {
                 embed = Embed
             }
