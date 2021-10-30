@@ -4,7 +4,6 @@ local DeletionC, MassDeletionC
 --[[ Functions ]]
 local function HandleDeletion(Message)
     if DeletionC and MassDeletionC and Message.guild.id == Config["GMRGID"] and Message.content and not Message.author.bot then
-        print("hellow")
         local Suc, Member = pcall(function()
             return Message.guild.members:get(Message.author.id)
         end)
