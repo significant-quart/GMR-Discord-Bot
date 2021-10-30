@@ -14,7 +14,7 @@ local Config = assert(JSON.decode(FileReader.readFileSync("Config.json")), "Fail
 if Config._DEBUG == true then
 	Config["GMRGID"] = "843951362907439135"
 	Config["GMRUID"] = "843951774834360371"
-	Config["DefaultInterval"] = 5
+	Config["DefaultInterval"] = 15
 	Config["GMRVerifyRID"] = "883084646433300501"
 	Config["GMRVerifyCID"] = "883087815326466048"
 	Config["GMRFeedbackCID"] = "885270081670643772"
@@ -26,6 +26,8 @@ if Config._DEBUG == true then
 	Config["FeedbackDelay"] = 10
 	Config["PriceCID"] = "885265881289097237"
 	Config["PriceMCID"] = "892482713322418196"
+	Config["DeletionCID"] = "903331195549528115"
+	Config["MassDeletionCID"] = "903975550580846612"
 else
 	Config["GMRGID"] = "835927915325161523"
 	Config["GMRUID"] = "887775198944821279"
@@ -41,6 +43,8 @@ else
 	Config["FeedbackDelay"] = 86400
 	Config["PriceCID"] = "892472021693366292"
 	Config["PriceMCID"] = "892001317227204618"
+	Config["DeletionCID"] = "904028005024813086"
+	Config["MassDeletionCID"] = "904028194796085328"
 end
 
 --[[ Discord Utils ]]
@@ -153,6 +157,7 @@ local function LoadModule(Module)
 		Interval = Interval,
 		CommaNumber = CommaNumber,
 		TableIndexExist = TableIndexExist,
+		BotStart = os.time(),
 
 		ModuleDir = Config.ModuleDir,
 		Prefix = Config.Prefix,
