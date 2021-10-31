@@ -36,7 +36,7 @@ local function FindResponsible(ActionType, Message)
 end
 
 local function HandleDeletion(Message)
-    if DeletionC and MassDeletionC and Message.guild.id == Config["GMRGID"] and Message.content and not Message.author.bot then
+    if DeletionC and MassDeletionC and Message.guild.id == Config["GMRGID"] and Message.content and not Message.author.bot and Message.channel.id ~= Config["GMRVerifyCID"] then
         local Suc, Member = pcall(function()
             return Message.guild.members:get(Message.author.id)
         end)

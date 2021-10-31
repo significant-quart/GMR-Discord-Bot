@@ -1,176 +1,78 @@
+--[[ Init ]]
+math.randomseed(os.time())
+
 --[[ Variables ]]
-local VerifyChannel
-local Responses = {}
-local SuccessMessageDelete = 10
-
-local Exists = FileReader.existsSync(ModuleDir.."/Captcha.db")
-
---[[ Database ]]
-local DB = assert(SQL.open(ModuleDir.."/Captcha.db"), "fatal: Failed to open Captcha database!")
-DB:exec("CREATE TABLE IF NOT EXISTS Words(Word TEXT);")
-DB:exec("CREATE TABLE IF NOT EXISTS Users(UID TEXT PRIMARY KEY, Word TEXT, MID TEXT);")
-
-local CreateUser = DB:prepare("INSERT OR REPLACE INTO Users(UID, Word, MID) VALUES(?, ?, ?)")
-local GetUser = DB:prepare("SELECT * FROM Users WHERE UID = ?")
-local GetWord = DB:prepare("SELECT * FROM Words ORDER BY RANDOM() LIMIT 1")
-local RemoveWord = DB:prepare("DELETE FROM Words WHERE Word = ?")
-local GetUserMessage = DB:prepare("SELECT MID FROM Users WHERE UID = ?")
-
+local Words = assert(FileReader.readFileSync(ModuleDir.."/Captcha.txt"):split("\n"), "fatal: Failed to open Captcha database!")
+local CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", "")
 local Ready = false
 
-local function AddWords()
-    local Words = assert(FileReader.readFileSync(ModuleDir.."/Captcha.txt"):split("\n"), "fatal: Failed to read or parse Captcha.json!")
+--[[ Functions ]]
+local function HandleLastMessage()
+    local VerifyChannel = BOT:getGuild(Config["GMRGID"]):getChannel(Config["GMRVerifyCID"])
+    local LastMessage = VerifyChannel:getFirstMessage()
 
-    local Stmt = [[INSERT INTO Words(Word) VALUES]]
+    local VerifyEmbed = SimpleEmbed(nil, "")
+    VerifyEmbed["title"] = "Welcome to the GMR Official Discord!"
+    VerifyEmbed["description"] = "To get verified please type the word highlighted below!\n``` ```\n\n**%s**\n\n``` ```\n"
+    VerifyEmbed["footer"] = {
+        ["text"] = "Make sure to type the word as shown; all lowercase, no spelling errors, no spaces.",
+        ["icon_url"] = BOT.user.avatarURL
+    }
 
-    for i, Word in pairs(Words) do
-        Stmt = Stmt.."\n"..F([[("%s")%s]], Word, (i < #Words and "," or ""))
+    if LastMessage then
+        CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", "")
+        VerifyEmbed["description"] = VerifyEmbed["description"]:format(CurrentMessage)
+
+        LastMessage:setEmbed(VerifyEmbed)
+    else
+        VerifyEmbed["description"] = VerifyEmbed["description"]:format(CurrentMessage)
+
+        VerifyChannel:send {
+            embed = VerifyEmbed
+        }
     end
-
-    DB:exec(Stmt)
-    Log(3, "Added words to Captcha.db.")
 end
+
+local Clock = Discordia.Clock()
+Clock:on("min", HandleLastMessage)
 
 --[[ Events ]]
 BOT:on("ready", function()
-    if Ready == true then return end
+    if not Ready then
+        HandleLastMessage()
 
-    if not Exists then
-        AddWords()
+        Clock:start()
+
+        Ready = true
     end
-
-    VerifyChannel = assert(BOT:getChannel(Config["GMRVerifyCID"]), "fatal: Failure fetching GMR verification channel!")
 end)
 
-BOT:on("memberJoin", function(Member)
-    pcall(function()
-        local User = GetUser:reset():bind(Member.user.id):step()
-        local Word
-
-        if User then
-            if User[3] ~= nil and #User[3] > 0 then
-                local OurMessage = VerifyChannel:getMessage(User[3])
-                
-                if OurMessage then
-                    OurMessage:delete()
-                end
-            end
-
-            Word = User[2]
-        else
-            Word = GetWord:reset():step()[1]
-
-            RemoveWord:reset():bind(Word):step()
-        end
-
-        local Arrow = string.rep("=", 23 - math.ceil(#Word/4))
-
-        Embed = {
-            ["description"] = F([[Welcome to the GMR Official Discord server!
-
-            **To get verified please type the message that is highlighted below in this channel!**]], Member.user.mentionString),
-            ["color"] = Config.EmbedColour,
-            ["fields"] = {
-                {
-                    ["name"] = "** **",
-                    ["value"] = Arrow..">",
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "** **",
-                    ["value"] = F("``%s``", Word),
-                    ["inline"] = true
-                },
-                {
-                    ["name"] = "** **",
-                    ["value"] = "<"..Arrow,
-                    ["inline"] = true
-                }
-            }
-        }
-
-        local Message, Err = VerifyChannel:send {
-            content = Member.user.mentionString,
-            embed = Embed
-        }
-
-        if Err == nil and Message.id then
-            Log(3, F("Creating/Updating user %s (%s)", Member.user.name, Member.user.id))
-
-            CreateUser:reset():bind(Member.user.id, Word, Message.id):step()
-        end
-    end)
-end)
-
-BOT:on("memberLeave", function(Member)
-    local MID = GetUserMessage:reset():bind(Member.user.id):step()
-
-    if MID ~= nil and MID[1] and #MID[1] > 0 then
-        local OurMessage = VerifyChannel:getMessage(MID[1])
-                
-        if OurMessage then
-            OurMessage:delete()
-        end
-    end
-
-    if Responses[Member.user.id] then
-        Responses[Member.user.id]:delete()
-
-        Responses[Member.user.id] = nil
-    end
-end )
 
 BOT:on("messageCreate", function(Payload)
     pcall(function()
         if Payload.guild and Payload.guild.id == Config["GMRGID"] and Payload.author and not Payload.author.bot and Payload.channel and Payload.channel.id == Config["GMRVerifyCID"] then
-            local User = GetUser:reset():bind(Payload.author.id):step()
+            print(CurrentMessage, Payload.content)
+            print(#CurrentMessage, #(Payload.content))
+            if Payload.content == CurrentMessage then
+                local Suc, Err = Payload.member:addRole(Config["GMRVerifyRID"])
+                
+                if Suc then
+                    Payload:delete()
 
-            if User ~= nil then
-                if Responses[Payload.author.id] then
-                    Responses[Payload.author.id]:delete()
-
-                    Responses[Payload.author.id] = nil
-                end
-
-                if User[2] == Payload.content then
-                    Payload.member:addRole(Config["GMRVerifyRID"])
+                    local Messages = Payload.channel:getMessages(100)
+                    if Messages then
+                        for k, Message in pairs(Messages) do
+                            if Message.author.id == Payload.author.id and Message.author.id ~= BOT.user.id then
+                                Message:delete()
+                            end
+                        end
+                    end
                     
                     Log(3, F("Verified %s (%s)", Payload.member.user.name, Payload.member.user.id))
-
-                    if User[3] and #User[3] > 0 then
-                        local OurMessage = VerifyChannel:getMessage(User[3])
-                    
-                        if OurMessage then
-                            OurMessage:delete()
-                        end
-                    end
-
-                    local Embed = SimpleEmbed(nil, F("%s **verification successful!\n\nWelcome to the GMR Official Discord!**", Payload.author.mentionString))
-                    Embed["thumbnail"] = {
-                        ["url"] = "https://cdn.discordapp.com/attachments/859171545418432533/887359235774623794/header-logo.png"
-                    }
-
-                    local SuccessMessage, Err = VerifyChannel:send {
-                        embed = Embed
-                    }
-
-                    Routine.setTimeout(SuccessMessageDelete * 1000, coroutine.wrap(function()
-                        if SuccessMessage and not Err then
-                            SuccessMessage:delete()
-
-                            SuccessMessage, Err = nil, nil
-                        end
-                    end))
                 else
-                    local LastMessage, Err = SimpleEmbed(Payload, F("%s the word you typed is not correct, if you can't see your word click [__``here!``__](https://discord.com/channels/%s/%s/%s)\n\n**Ensure to type the word all lowercase with correct spelling.**", Payload.author.mentionString, Payload.guild.id, Payload.channel.id, User[3]))
-
-                    if LastMessage and not Err then
-                        Responses[Payload.author.id] = LastMessage
-                    end
+                    Log(1, F("Failed to verify %s (%s)", Payload.member.user.name, Payload.member.user.id))
                 end
             end
-
-            Payload:delete()
         end
     end)
 end)
