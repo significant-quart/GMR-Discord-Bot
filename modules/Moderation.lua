@@ -2,8 +2,41 @@
 local DeletionC, MassDeletionC
 
 --[[ Functions ]]
+local function FindResponsible(ActionType, Message)
+    local Responsible
+    local AuditLogs = Message.guild:getAuditLogs({["type"] = ActionType})
+
+    if AuditLogs then
+        for _, AuditLog in pairs(AuditLogs) do
+            if AuditLog.targetId == Message.author.id then
+                local AuditTime = AuditLog:getDate():toSeconds()
+
+                if not Responsible then
+                    Responsible = {
+                        ["TimeStamp"] = AuditTime,
+                        ["UID"] = AuditLog.userId
+                    }
+                else
+                    Responsible = (AuditTime < Responsible["TimeStamp"] and {
+                        ["TimeStamp"] = AuditTime,
+                        ["UID"] = AuditLog.userId
+                    } or Responsible)
+                end
+            end
+        end
+
+        if Responsible then
+            Responsible["Member"] = Message.guild:getMember(Responsible["UID"])
+        end
+
+        return Responsible
+    end
+
+    return nil
+end
+
 local function HandleDeletion(Message)
-    if DeletionC and MassDeletionC and Message.guild.id == Config["GMRGID"] and Message.content and not Message.author.bot then
+    if DeletionC and MassDeletionC and Message.guild.id == Config["GMRGID"] and Message.content --[[ and not Message.author.bot  ]]then
         local Suc, Member = pcall(function()
             return Message.guild.members:get(Message.author.id)
         end)
@@ -33,48 +66,29 @@ local function HandleDeletion(Message)
         })
 
         if not Member then
-            local CurrentBan
-            local AuditLogs = Message.guild:getAuditLogs({["type"] = 22})
- 
-            if AuditLogs then
-                for _, AuditLog in pairs(AuditLogs) do
-                    if AuditLog.targetId == Message.author.id then
-                        local BanTime = AuditLog:getDate():toSeconds()
-
-                        if not CurrentBan then
-                            CurrentBan = {
-                                ["TimeStamp"] = BanTime,
-                                ["UID"] = AuditLog.userId
-                            }
-                        else
-                            CurrentBan = (BanTime < CurrentBan["TimeStamp"] and {
-                                ["TimeStamp"] = BanTime,
-                                ["UID"] = AuditLog.userId
-                            } or CurrentBan)
-                        end
-                    end
-                end
-            end
-
-            if CurrentBan then
-                CurrentBan["Banner"] = Message.guild:getMember(CurrentBan.UID)
-            end
+            local CurrentBan = FindResponsible(22, Message)
 
             table.insert(Embed["fields"], {
                 ["name"] = "** **",
-                ["value"] = (CurrentBan["Banner"] and F("This user was banned by %s", CurrentBan["Banner"].mentionString) or "")
+                ["value"] = (CurrentBan and CurrentBan["Member"] and F("This user was banned by %s", CurrentBan["Member"].mentionString) or "")
             })
 
             MassDeletionC:send {
                 embed = Embed
             }
         else
+            local Deleter = FindResponsible(72, Message)
+
+            table.insert(Embed["fields"], {
+                ["name"] = "** **",
+                ["value"] = F("This message was deleted by %s", Deleter and Deleter["Member"] and Deleter["Member"].mentionString or Message.author.mentionString)
+            })
+
+
             DeletionC:send {
                 embed = Embed
             }
         end
-
-        Suc, Member, Embed = nil, nil, nil
     end
 end
 
