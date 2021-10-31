@@ -16,7 +16,7 @@ if Config._DEBUG == true then
 	Config["GMRUID"] = "843951774834360371"
 	Config["DefaultInterval"] = 15
 	Config["GMRVerifyRID"] = "883084646433300501"
-	Config["GMRVerifyCID"] = "883087815326466048"
+	Config["GMRVerifyCID"] = "904422931105480824"
 	Config["GMRFeedbackCID"] = "885270081670643772"
 	Config["CoingeckEID"] = "coingecko:843985310379016223"
 	Config["BitqueryEID"] = "bitquery:858844249419022336"
@@ -33,7 +33,7 @@ else
 	Config["GMRUID"] = "887775198944821279"
 	Config["DefaultInterval"] = 30
     Config["GMRVerifyRID"] = "840619660244287489"
-    Config["GMRVerifyCID"] = "840634281336242198"
+    Config["GMRVerifyCID"] = "904440020151193610"
 	Config["GMRFeedbackCID"] = "887788240814342245"
 	Config["CoingeckEID"] = "coingecko:887798321903710268"
 	Config["BitqueryEID"] = "BitQuery:887798309174018068"

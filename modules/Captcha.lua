@@ -34,7 +34,7 @@ local function HandleLastMessage()
 end
 
 local Clock = Discordia.Clock()
-Clock:on("min", HandleLastMessage)
+Clock:on("hour", HandleLastMessage)
 
 --[[ Events ]]
 BOT:on("ready", function()
