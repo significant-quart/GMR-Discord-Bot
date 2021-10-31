@@ -34,21 +34,24 @@ local function HandleDeletion(Message)
 
         if not Member then
             local CurrentBan
+            local AuditLogs = Message.guild:getAuditLogs({["type"] = 22})
  
-            for _, AuditLog in pairs(Message.guild:getAuditLogs({["type"] = 22})) do
-                if AuditLog.targetId == Message.author.id then
-                    local BanTime = AuditLog:getDate():toSeconds()
+            if AuditLogs then
+                for _, AuditLog in pairs(AuditLogs) do
+                    if AuditLog.targetId == Message.author.id then
+                        local BanTime = AuditLog:getDate():toSeconds()
 
-                    if not CurrentBan then
-                        CurrentBan = {
-                            ["TimeStamp"] = BanTime,
-                            ["UID"] = AuditLog.userId
-                        }
-                    else
-                        CurrentBan = (BanTime < CurrentBan["TimeStamp"] and {
-                            ["TimeStamp"] = BanTime,
-                            ["UID"] = AuditLog.userId
-                        } or CurrentBan)
+                        if not CurrentBan then
+                            CurrentBan = {
+                                ["TimeStamp"] = BanTime,
+                                ["UID"] = AuditLog.userId
+                            }
+                        else
+                            CurrentBan = (BanTime < CurrentBan["TimeStamp"] and {
+                                ["TimeStamp"] = BanTime,
+                                ["UID"] = AuditLog.userId
+                            } or CurrentBan)
+                        end
                     end
                 end
             end
