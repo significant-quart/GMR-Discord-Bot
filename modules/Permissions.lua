@@ -26,11 +26,15 @@ _G.HasPermission = function(Member, Command, Category, Channel)
             if Allow == true then
                 i = i + 1
 
-                table.insert(Channels, F("<#%s>", CID))
+                if CID == AllChannels then
+                    table.insert(Channels, CID)
+                else
+                    table.insert(Channels, F("<#%s>", CID))
+                end
             end
         end
 
-        FoundChannel = (Permissions["Commands"][Command]["Channels"][Channel.id] or Permissions["Commands"][Command]["Channels"]["everything"] or false)
+        FoundChannel = (Permissions["Commands"][Command]["Channels"][Channel.id] or Permissions["Commands"][Command]["Channels"][AllChannels] or false)
     end
 
     if Category and Permissions["Categories"][Category] and Permissions["Categories"][Category]["Channels"] and not FoundChannel then
@@ -38,11 +42,15 @@ _G.HasPermission = function(Member, Command, Category, Channel)
             if Allow == true then
                 i = i + 1
 
-                table.insert(Channels, F("<#%s>", CID))
+                if CID == AllChannels then
+                    table.insert(Channels, CID)
+                else
+                    table.insert(Channels, F("<#%s>", CID))
+                end 
             end
         end
 
-        FoundChannel = (Permissions["Categories"][Category]["Channels"][Channel.id] or Permissions["Categories"][Category]["Channels"]["everything"] or false)
+        FoundChannel = (Permissions["Categories"][Category]["Channels"][Channel.id] or Permissions["Categories"][Category]["Channels"][AllChannels] or false)
     end
 
     if FoundChannel == false then 
@@ -242,11 +250,7 @@ PermissionsCommand:AddSubCommand("view", function(Args, Payload)
 
                 if Permissions["Categories"][Category]["Channels"] then
                     for CID, Allow in pairs(Permissions["Categories"][Category]["Channels"]) do
-                        if CID == AllChannels then
-                            RoleStr = F("%s %s %s", RoleStr, "**All Channels**", (Allow == true and ":green_circle:" or ":red_circle:"))
-                        else
-                            RoleStr = F("%s %s %s", RoleStr, F("<#%s>", CID), (Allow == true and ":green_circle:" or ":red_circle:"))
-                        end
+                        RoleStr = F("%s %s %s", RoleStr, (CID ~= AllChannels and F("<#%s>", CID) or "**All Channels**"), (Allow == true and ":green_circle:" or ":red_circle:"))
                     end
                 end
 
@@ -261,11 +265,7 @@ PermissionsCommand:AddSubCommand("view", function(Args, Payload)
 
                 if Permissions["Commands"][Name]["Channels"] then
                     for CID, Allow in pairs(Permissions["Commands"][Name]["Channels"]) do
-                        if CID == AllChannels then
-                            RoleStr = F("%s %s %s", RoleStr, "**All Channels**", (Allow == true and ":green_circle:" or ":red_circle:"))
-                        else
-                            RoleStr = F("%s %s %s", RoleStr, F("<#%s>", CID), (Allow == true and ":green_circle:" or ":red_circle:"))
-                        end
+                        RoleStr = F("%s %s %s", RoleStr, (CID ~= AllChannels and F("<#%s>", CID) or "**All Channels**"), (Allow == true and ":green_circle:" or ":red_circle:"))
                     end
                 end
             end

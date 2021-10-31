@@ -81,9 +81,8 @@ local function HandleDeletion(Message)
 
             table.insert(Embed["fields"], {
                 ["name"] = "** **",
-                ["value"] = F("This message was deleted by %s", Deleter and Deleter["Member"] and Deleter["Member"].mentionString or Message.author.mentionString)
+                ["value"] = F("This message was deleted by %s", Deleter and Deleter["Member"] and Deleter["Member"].mentionString or F("%s or %s", Message.author.mentionString, BOT.user.mentionString))
             })
-
 
             DeletionC:send {
                 embed = Embed
