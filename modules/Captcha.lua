@@ -51,8 +51,6 @@ end)
 BOT:on("messageCreate", function(Payload)
     pcall(function()
         if Payload.guild and Payload.guild.id == Config["GMRGID"] and Payload.author and not Payload.author.bot and Payload.channel and Payload.channel.id == Config["GMRVerifyCID"] then
-            print(CurrentMessage, Payload.content)
-            print(#CurrentMessage, #(Payload.content))
             if Payload.content == CurrentMessage then
                 local Suc, Err = Payload.member:addRole(Config["GMRVerifyRID"])
                 
