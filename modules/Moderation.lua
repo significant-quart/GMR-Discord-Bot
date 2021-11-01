@@ -5,22 +5,30 @@ local DeletionC, MassDeletionC
 local function FindResponsible(ActionType, Message)
     local Responsible
     local AuditLogs = Message.guild:getAuditLogs({["type"] = ActionType})
+    local MessageTime
+
+    if ActionType == 72 then
+        MessageTime = Discordia.Date().fromISO(Message.timestamp):toSeconds()
+    end
 
     if AuditLogs then
         for _, AuditLog in pairs(AuditLogs) do
-            if AuditLog.targetId == Message.author.id then
-                local AuditTime = AuditLog:getDate():toSeconds()
+            local AuditTime = AuditLog:getDate():toSeconds()
+            local Delta = (MessageTime ~= nil and (AuditTime - MessageTime) or 0)
 
-                if not Responsible then
-                    Responsible = {
-                        ["TimeStamp"] = AuditTime,
-                        ["UID"] = AuditLog.userId
-                    }
-                else
-                    Responsible = (AuditTime < Responsible["TimeStamp"] and {
-                        ["TimeStamp"] = AuditTime,
-                        ["UID"] = AuditLog.userId
-                    } or Responsible)
+            if AuditLog.targetId == Message.author.id then
+                if (Delta == 0 or Delta > 0 or AuditLog["options"] and AuditLog["options"]["count"] and tonumber(AuditLog["options"]["count"]) > 1) then
+                    if not Responsible then
+                        Responsible = {
+                            ["TimeStamp"] = AuditTime,
+                            ["UID"] = AuditLog.userId
+                        }
+                    else
+                        Responsible = (AuditTime < Responsible["TimeStamp"] and {
+                            ["TimeStamp"] = AuditTime,
+                            ["UID"] = AuditLog.userId
+                        } or Responsible)
+                    end
                 end
             end
         end
