@@ -72,8 +72,6 @@ local AnswerToIndex = {
 
 --[[ Functions ]]
 local function ShuffleAnswers(Answers)
-    local UsedIndexes = {}
- 
     for i = 1, 4, 1 do
         RInt = math.random(1, #Answers)
         local This, New = Answers[i], Answers[RInt]
@@ -99,6 +97,8 @@ end
 
 --[[ Commands ]]
 CommandManager.Command("coin", function(Args, Payload)
+    Args = nil
+    
     math.randomseed(os.time())
     local RInt = math.random(1, 2)
 
@@ -257,6 +257,8 @@ local TriviaCommand = CommandManager.Command("trivia", function(Args, Payload)
 end):SetCategory("Misc Commands"):SetDescription("Multiple choice trivia with 24 categories.")
 
 TriviaCommand:AddSubCommand("categories", function(Args, Payload)
+    Args = nil
+
     local CategoryString = ""
     for i = 1, #CategoriesIndexMap, 1 do
         CategoryString = CategoryString..F("\n``%s%s``: %s", (i < 10 and "0" or ""), i, CategoriesIndexMap[i])
