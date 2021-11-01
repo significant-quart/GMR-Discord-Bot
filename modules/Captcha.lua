@@ -13,7 +13,7 @@ local function HandleLastMessage()
 
     local VerifyEmbed = SimpleEmbed(nil, "")
     VerifyEmbed["title"] = "Welcome to the GMR Official Discord!"
-    VerifyEmbed["description"] = "To get verified please type the word highlighted below!\n``` ```\n\n**%s**\n\n``` ```\n"
+    VerifyEmbed["description"] = "To get verified please type the word highlighted below!\n``` ```\n\n**%s**\n\n\n``` ```\n"
     VerifyEmbed["footer"] = {
         ["text"] = "Make sure to type the word as shown; all lowercase, no spelling errors, no spaces.",
         ["icon_url"] = BOT.user.avatarURL
