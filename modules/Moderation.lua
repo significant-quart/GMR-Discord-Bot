@@ -89,7 +89,7 @@ local function HandleDeletion(Message)
 
             table.insert(Embed["fields"], {
                 ["name"] = "** **",
-                ["value"] = F("This message was deleted by %s", Deleter and Deleter["Member"] and Deleter["Member"].mentionString or F("%s or <@%s>", Message.author.mentionString, "885228925981196320"))
+                ["value"] = F("This message was deleted by %s", Deleter and Deleter["Member"] and Deleter["Member"].mentionString or F("%s or <@&%s>", Message.author.mentionString, "885228925981196320"))
             })
 
             DeletionC:send {
