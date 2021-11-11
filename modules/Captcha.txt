@@ -1,4 +1,3 @@
-a
 abandon
 ability
 able
@@ -1309,7 +1308,6 @@ hunting
 hurt
 husband
 hypothesis
-I
 ice
 idea
 ideal
