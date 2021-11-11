@@ -5,7 +5,7 @@ CommandManager.Command("help", function(Args, Payload)
 		assert(Command ~= nil, "that command does not exist.")
 		
 		local Description = Command:GetLongDescription()
-		assert(Description ~= nil, "there is no additional information available for that comamnd.")
+		assert(Description ~= nil, "there is no additional information available for that command.")
 
 		return SimpleEmbed(Payload, F("Additional information for command ``%s%s``:\n \n%s", Prefix, Args[2], Description))
 	end
