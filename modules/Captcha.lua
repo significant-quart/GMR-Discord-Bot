@@ -3,7 +3,7 @@ math.randomseed(os.time())
 
 --[[ Variables ]]
 local Words = assert(FileReader.readFileSync(ModuleDir.."/Captcha.txt"):split("\n"), "fatal: Failed to open Captcha database!")
-local CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", "")
+local CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", ""):lower()
 local Ready = false
 
 --[[ Functions ]]
@@ -20,7 +20,7 @@ local function HandleLastMessage()
     }
 
     if LastMessage then
-        CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", "")
+        CurrentMessage = Words[math.random(1, #Words)]:gsub("%s", ""):lower()
         VerifyEmbed["description"] = VerifyEmbed["description"]:format(CurrentMessage)
 
         LastMessage:setEmbed(VerifyEmbed)
