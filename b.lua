@@ -28,6 +28,8 @@ if Config._DEBUG == true then
 	Config["PriceMCID"] = "892482713322418196"
 	Config["DeletionCID"] = "903331195549528115"
 	Config["MassDeletionCID"] = "903975550580846612"
+	Config["TelegramCID"] = "-1001722846309"
+	Config["TelegramDiscordCID"] = "906329816318488596"
 else
 	Config["GMRGID"] = "835927915325161523"
 	Config["GMRUID"] = "887775198944821279"
@@ -45,6 +47,8 @@ else
 	Config["PriceMCID"] = "892001317227204618"
 	Config["DeletionCID"] = "904028726252163102"
 	Config["MassDeletionCID"] = "904028194796085328"
+	Config["TelegramCID"] = ""
+	Config["TelegramDiscordCID"] = ""
 end
 
 --[[ Discord Utils ]]
