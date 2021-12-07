@@ -269,7 +269,7 @@ BOT:on("messageDelete", HandleDeletion)
 BOT:on("memberJoin", HandleMemberName)
 
 --[[ Interval ]]
-Interval(Config["DefaultInterval"] * 1000, function()
+Interval((Config["DefaultInterval"] * 4) * 1000, function()
     if not GMRG or not GMRG.members then return end
 
     for _, Member in pairs(GMRG.members) do
