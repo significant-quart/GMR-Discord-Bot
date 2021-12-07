@@ -196,7 +196,7 @@ local function HandleMemberName(Member)
                         },
                         {
                             ["name"] = "Roles",
-                            ["value"] = table.concat(AllRoleNames, ", ")
+                            ["value"] = (#AllRoleNames > 0 and table.concat(AllRoleNames, ", ") or "No Roles")
                         }
                     }
                 }
