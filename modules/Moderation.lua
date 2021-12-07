@@ -156,7 +156,7 @@ local function HandleMemberName(Member)
                 Status = Member.status:sub(1, 1):upper()..Member.status:sub(2, #Member.status)
             end
         
-            local Suc = SuspiciousNamesC:send {
+            local Suc, Err = SuspiciousNamesC:send {
                 embed = {
                     ["color"] = Config.EmbedColour,
                     ["thumbnail"] = {
@@ -206,6 +206,8 @@ local function HandleMemberName(Member)
                 ModerationData["SuspiciousUsers"][Member.user.username] = true
 
                 SaveModerationData()
+            else
+                print(Err, JSON.encode(Embed))
             end
 
             return
