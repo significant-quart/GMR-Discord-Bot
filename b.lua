@@ -50,7 +50,7 @@ else
 	Config["MassDeletionCID"] = "904028194796085328"
 	Config["TelegramCID"] = ""
 	Config["TelegramDiscordCID"] = ""
-	Config["SuspiciousNamesCID"] = "917782587831885834"
+	Config["SuspiciousNamesCID"] = "917813741649788958"
 end
 
 --[[ Discord Utils ]]
