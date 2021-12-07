@@ -206,8 +206,6 @@ local function HandleMemberName(Member)
                 ModerationData["SuspiciousUsers"][Member.user.username] = true
 
                 SaveModerationData()
-            else
-                print(Err, JSON.encode(Embed))
             end
 
             return
