@@ -1,6 +1,6 @@
 --[[ Variables ]]
 local GMRPriceEmbed
-local ChainID, GMRContract = 56, "0x0523215DCafbF4E4aA92117d13C6985a3BeF27D7"
+local ChainID, GMRContract = 56, "0xadca52302e0a6c2d5d68edcdb4ac75deb5466884"
 
 local LastMessage
 
@@ -58,6 +58,7 @@ local function GetSuperScript(N)
 end
 
 local function GetPriceFromSF(Price, Sign)
+    print(Price)
     if Price:sub(2, 2) == "e" then
         Price = Price:gsub("e", ".0e")
     end
@@ -118,7 +119,7 @@ Interval(Config["DefaultInterval"] * 1000, function()
     if Success then
         table.insert(ThisGMRPriceEmbed["fields"], {
             ["name"] = F("Price"),
-            ["value"] = (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"]), true) or "Unavailable"),
+            ["value"] = (Data["price_usd"] ~= nil and tostring(math.round(Data["price_usd"], 5)) or "Unavailable"),
             ["inline"] = true
         })
 
@@ -156,7 +157,7 @@ Interval(Config["DefaultInterval"] * 1000, function()
 
         local PriceChannel, Err = BOT:getChannel(Config["PriceCID"])
         if PriceChannel and not Err then
-            PriceChannel:setName(F("💲 %s", (Data["price_usd"] ~= nil and GetPriceFromSF(tostring(Data["price_usd"]), false) or "Unavailable")))
+            PriceChannel:setName(F("💲 %s", (Data["price_usd"] ~= nil and tostring(math.round(Data["price_usd"], 5)) or "Unavailable")))
         end
 
         local PriceChannel, Err = BOT:getChannel(Config["PriceMCID"])
