@@ -270,7 +270,6 @@ BOT:on("memberJoin", HandleMemberName)
 
 --[[ Interval ]]
 Interval((Config["DefaultInterval"] * 4) * 1000, function()
-    print("...", GMRG, GMRG.members)
     if not GMRG or not GMRG.members then return end
 
     for _, Member in pairs(GMRG.members) do
