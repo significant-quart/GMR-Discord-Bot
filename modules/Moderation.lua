@@ -1,5 +1,37 @@
+--[[ Init ]]
+local ModerationData = FileReader.readFileSync(ModuleDir.."/Moderation.json")
+if not ModerationData then 
+    Log(2, "Couldn't find Moderation.json, creating a new one...") 
+
+    ModerationData = {
+        ["SuspiciousNames"] = {
+            "gmr",
+            "brandon",
+            "craig",
+            "scott",
+            "wannabree",
+            "frank🎙",
+            "admin",
+            "dev",
+            "support",
+            "help",
+            "desk",
+            "metamask",
+            "trustwallet",
+            "center"
+        },
+        ["SuspiciousUsers"] = {}
+    }
+else
+    ModerationData = assert(JSON.decode(ModerationData), "fatal: Failed to parse SusNames.json.")
+end
+
 --[[ Variables ]]
+local GMRG
+
 local DeletionC, MassDeletionC
+
+local SuspiciousNamesC
 
 --[[ Functions ]]
 local function FindResponsible(ActionType, Message)
@@ -99,8 +131,126 @@ local function HandleDeletion(Message)
     end
 end
 
+local function SaveModerationData()
+    FileReader.writeFileSync(ModuleDir.."/Moderation.json", JSON.encode(ModerationData))
+end
+
+local function HandleMemberName(Member)
+    if not Member.user or not Member.user.username or ModerationData["SuspiciousUsers"][Member.user.username] ~= nil then return end
+    if Member.highestRole.id ~= Config["GMRVerifyRID"] and Member.highestRole ~= Member.guild.defaultRole then return end
+
+    local Username = Member.user.username:lower()
+
+    for i, Pattern in ipairs(ModerationData["SuspiciousNames"]) do
+        if Username:match(Pattern:lower()) then
+            local AllRoleNames = {}
+
+            if Member.roles then
+                Member.roles:forEach(function(Role)
+                    table.insert(AllRoleNames, Role.mentionString)
+                end) 
+            end
+        
+            local Status = "Not available."
+            if Member.status then
+                Status = Member.status:sub(1, 1):upper()..Member.status:sub(2, #Member.status)
+            end
+        
+            local Suc = SuspiciousNamesC:send {
+                embed = {
+                    ["color"] = Config.EmbedColour,
+                    ["thumbnail"] = {
+                        ["url"] = Member.user:getAvatarURL()
+                    },
+                    ["title"] = "User Found with Suspicious Username!",
+                    ["fields"] = {
+                        {
+                            ["name"] = "Name",
+                            ["value"] = F("%s\n(``%s``)", Member.user.mentionString, Member.id),
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Discriminator",
+                            ["value"] = Member.user.discriminator,
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Status",
+                            ["value"] = Status,
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Joined Discord",
+                            ["value"] = (Member.joinedAt and F("<t:%d:F>", Discordia.Date().fromSnowflake(Member.id):toSeconds()) or "Not available"),
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Joined GMR Discord",
+                            ["value"] = (Member.joinedAt and F("<t:%d:F>", Discordia.Date().fromISO(Member.joinedAt):toSeconds()) or "Not available"),
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Boosting Since",
+                            ["value"] = (Member.premiumSince and F("<t:%d:F>", Discordia.Date().fromISO(Member.premiumSince):toSeconds()) or "Not boosting."),
+                            ["inline"] = true
+                        },
+                        {
+                            ["name"] = "Roles",
+                            ["value"] = table.concat(AllRoleNames, ", ")
+                        }
+                    }
+                }
+            }
+
+            if Suc then
+                ModerationData["SuspiciousUsers"][Member.user.username] = true
+
+                SaveModerationData()
+            end
+
+            return
+        end
+    end
+end
+
+--[[ Commands ]]
+local ManageKeyword = CommandManager.Command("keyword", function() end)
+
+ManageKeyword:AddSubCommand("add", function(Args, Payload)
+    assert(Args[2] ~= nil, "")
+
+    table.insert(ModerationData["SuspiciousNames"], ReturnRestOfCommand(Args, 3))
+
+    SaveModerationData()
+
+    assert(1 == 2, "added keyword(s) successfully.")
+end)
+
+ManageKeyword:AddSubCommand("remove", function(Args, Payload)
+    assert(Args[2] ~= nil, "")
+
+    local Content = ReturnRestOfCommand(Args, 3)
+
+    for i, Word in ipairs(ModerationData["SuspiciousNames"]) do
+        if Word == Content then
+            ModerationData["SuspiciousNames"][i] = nil
+
+            SaveModerationData()
+            assert(1 == 2, "removed keyword(s) successfully.")
+
+            return
+        end
+    end
+
+    assert(1 == 2, "those keyword(s) do not exist.")
+end)
+
 --[[ Events ]]
 BOT:on("ready", function()
+    if not GMRG then
+        GMRG = BOT:getGuild(Config["GMRGID"])
+    end
+
     if not DeletionC then
         DeletionC = BOT:getChannel(Config["DeletionCID"])
     end
@@ -108,6 +258,21 @@ BOT:on("ready", function()
     if not MassDeletionC then
         MassDeletionC = BOT:getChannel(Config["MassDeletionCID"])
     end
+
+    if not SuspiciousNamesC then
+        SuspiciousNamesC = BOT:getChannel(Config["SuspiciousNamesCID"])
+    end
 end)
 
 BOT:on("messageDelete", HandleDeletion)
+
+BOT:on("memberJoin", HandleMemberName)
+
+--[[ Interval ]]
+Interval(Config["DefaultInterval"] * 1000, function()
+    if not GMRG or not GMRG.members then return end
+
+    for _, Member in pairs(GMRG.members) do
+        pcall(HandleMemberName, Member)
+    end
+end)
