@@ -97,9 +97,9 @@ Interval(Config["DefaultInterval"] * 1000, function()
         ["url"] = "https://gmr.finance/",
         ["description"] = F([[
 
-            [Buy GMR on <:%s>](https://app.apeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7) | [Buy GMR on <:%s>](https://pancakeswap.finance/swap?outputCurrency=0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+            [Buy GMR on <:%s>](https://app.apeswap.finance/swap?outputCurrency=0xadca52302e0a6c2d5d68edcdb4ac75deb5466884) | [Buy GMR on <:%s>](https://pancakeswap.finance/swap?outputCurrency=0xadca52302e0a6c2d5d68edcdb4ac75deb5466884)
 
-            Charts: [DEXTools](https://www.dextools.io/app/bsc/pair-explorer/0x007ace5397b56e19a9436fba289d7fed71c49328) | [poocoin](https://poocoin.app/tokens/0x0523215dcafbf4e4aa92117d13c6985a3bef27d7)
+            Charts: [DEXTools](https://www.dextools.io/app/bsc/pair-explorer/0xadca52302e0a6c2d5d68edcdb4ac75deb5466884) | [poocoin](https://poocoin.app/tokens/0xadca52302e0a6c2d5d68edcdb4ac75deb5466884)
         ]], Config["ApeswapEID"], Config["PancakeEID"]),
         ["color"] = Config.EmbedColour,
         ["thumbnail"] = {
