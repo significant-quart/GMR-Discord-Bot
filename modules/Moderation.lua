@@ -224,7 +224,7 @@ ManageKeyword:AddSubCommand("add", function(Args, Payload)
     SaveModerationData()
 
     assert(1 == 2, "added keyword(s) successfully.")
-end)
+end):SetCategory("Moderation Commands")
 
 ManageKeyword:AddSubCommand("remove", function(Args, Payload)
     assert(Args[2] ~= nil, "")
