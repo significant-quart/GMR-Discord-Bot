@@ -214,20 +214,20 @@ local function HandleMemberName(Member)
 end
 
 --[[ Commands ]]
-local ManageKeyword = CommandManager.Command("keyword", function() end)
+local ManageKeyword = CommandManager.Command("keyword", function() end):SetCategory("Moderation Commands")
 
 ManageKeyword:AddSubCommand("add", function(Args, Payload)
-    assert(Args[2] ~= nil, "")
+    assert(Args[2] ~= nil and Args[3] ~= nil and #Args[3] > 0, "")
 
     table.insert(ModerationData["SuspiciousNames"], ReturnRestOfCommand(Args, 3))
 
     SaveModerationData()
 
     assert(1 == 2, "added keyword(s) successfully.")
-end):SetCategory("Moderation Commands")
+end)
 
 ManageKeyword:AddSubCommand("remove", function(Args, Payload)
-    assert(Args[2] ~= nil, "")
+    assert(Args[2] ~= nil and Args[3] ~= nil and #Args[3] > 0, "")
 
     local Content = ReturnRestOfCommand(Args, 3)
 

@@ -170,7 +170,7 @@ local function LoadModule(Module)
 		DefaultInterval = Config.DefaultInterval,
 	}, {__index = _G})
 
-	local Func = assert(loadstring(Code, "@"..Module, "t", Env))
+	local Func = assert(load(Code, "@"..Module, "t", Env))
 
 	return Func()
 end
