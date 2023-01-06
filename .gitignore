@@ -19,7 +19,5 @@ modules/Moderation.json
 modules/Clash.lua
 modules/Dev.lua
 
-modules/Telegram/*
-
 *.dll
 sqlite3.def

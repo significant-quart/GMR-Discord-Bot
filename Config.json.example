@@ -1,0 +1,10 @@
+{
+    "EmbedColour": "15767058",              /* Used for the colour on the side of embeds. */
+    "Prefix": "+",                          /* The prefix for commands, i.e. >help */
+    "ModuleDir": "./modules",               /* The folder containing the bot "modules". All lua files in this directory will be loaded automatically. */
+    "_DEBUG": false,                         /* Log debug and additional information. Set to true if you are modifying the bot or something is working properly. */
+    "PrettyJSON": true,                     /* Indents JSON when being saved. */
+    "API": {                                /* All API keys used. */
+        "DEXGuru": ""
+    }
+}
